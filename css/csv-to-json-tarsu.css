@@ -1,88 +1,94 @@
-input[type="file"] {
-    display: none;
+input[type='file'] {
+	display: none;
 }
 .btn {
-    display: none;
+	display: none;
 }
 
 .json-container {
-    position: relative;
-    margin-top: 20px;
+	position: relative;
+	margin-top: 20px;
 	width: 100%;
-    min-width: 0;
-    box-sizing: border-box;
+	min-width: 0;
+	box-sizing: border-box;
 }
 pre {
-    background: #272822;
-    color: #f8f8f2;
-    padding: 25px;
-    border-radius: 4px;
-    overflow-x: auto;
-    max-height: 250px;
-    font-size: 13px;
-    text-align: left;
-    margin-top: 10px;
-	max-width: 100%; 
-    box-sizing: border-box;
-    white-space: pre-wrap;
-    word-break: break-all;
+	background: #272822;
+	color: #f8f8f2;
+	padding: 25px;
+	border-radius: 4px;
+	overflow-x: auto;
+	max-height: 250px;
+	font-size: 13px;
+	text-align: left;
+	margin-top: 10px;
+	max-width: 100%;
+	box-sizing: border-box;
+	white-space: pre-wrap;
+	word-break: break-all;
 }
 .error {
-    color: #e74c3c;
-    font-weight: bold;
-    margin-top: 10px;
+	color: #e74c3c;
+	font-weight: bold;
+	margin-top: 10px;
 }
 
 .copy-btn {
-    position: absolute;
-    right: 15px;
-    top: 78px;
-    background: rgba(255, 255, 255, 0.15);
-    color: #f8f8f2;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    padding: 6px;
-    font-size: 12px;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    margin: 0;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    z-index: 10;
+	position: absolute;
+	right: 15px;
+	top: 78px;
+	background: rgba(255, 255, 255, 0.15);
+	color: #f8f8f2;
+	border: 1px solid rgba(255, 255, 255, 0.2);
+	padding: 6px;
+	font-size: 12px;
+	border-radius: 4px;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	margin: 0;
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	z-index: 10;
 }
 .copy-btn i {
-    font-size: 14px;
-    margin: 0;
+	font-size: 14px;
+	margin: 0;
 }
 .copy-btn:hover {
-    background: #3498db;
-    color: white;
-    border-color: #3498db;
-    transform: none;
-    opacity: 1;
+	background: #3498db;
+	color: white;
+	border-color: #3498db;
+	transform: none;
+	opacity: 1;
 }
 .copy-btn.copied {
-    background: #2ecc71;
-    border-color: #2ecc71;
-    color: white;
+	background: #2ecc71;
+	border-color: #2ecc71;
+	color: white;
 	padding: 6px 12px;
 }
 
 .upload-section {
-    border: 2px dashed #3498db;
-    padding: 20px;
-    text-align: center;
-    border-radius: 6px;
-    background: #f8fafc;
-    cursor: pointer;
-    margin-bottom: 20px;
-    transition: background 0.3s;
+	border: 2px dashed #3498db;
+	padding: 40px 20px;
+	text-align: center;
+	border-radius: 6px;
+	background: #f8fafc;
+	cursor: pointer;
+	margin-bottom: 20px;
+	transition: all 0.3s;
 	width: 100%;
-    box-sizing: border-box;
+	box-sizing: border-box;
 }
-.upload-section:hover {
-    background: #edf2f7;
-	width: 100%;
-    box-sizing: border-box;
+.upload-section:hover,
+.upload-section:focus {
+	background: #edf2f7;
+	border-color: #2980b9;
+	outline: none;
+}
+/* Estado visual quando o arquivo é arrastado por cima */
+.upload-section.dragover {
+	background: #e1f0fa;
+	border-color: #2ecc71;
 }
