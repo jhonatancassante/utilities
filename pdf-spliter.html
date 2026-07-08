@@ -1,65 +1,80 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Extrair Páginas de PDFs</title>
-    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
-    <script src="https://unpkg.com/jszip@3.10.1/dist/jszip.min.js"></script>
-    <script src="js/pdf-spliter.js" defer></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="css/global.css">
-	<link rel="stylesheet" href="css/pdf-spliter.css">
-</head>
-<body>
-    <header>
-        <div class="header-content">
-            <a href="javascript:history.back()" class="back-btn">
-                <i class="fas fa-arrow-left"></i>
-            </a>
-            <i class="fas fa-tools"></i>
-            <h1>UTILITÁRIOS</h1>
-        </div>
-    </header>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Extrair Páginas de PDFs</title>
+		<script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+		<script src="https://unpkg.com/jszip@3.10.1/dist/jszip.min.js"></script>
+		<script src="js/pdf-spliter.js" defer></script>
+		<link
+			rel="stylesheet"
+			href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+		/>
+		<link rel="stylesheet" href="css/global.css" />
+		<link rel="stylesheet" href="css/pdf-spliter.css" />
+	</head>
+	<body>
+		<header>
+			<div class="header-content">
+				<a href="index.html" class="back-btn" title="Voltar ao menu">
+					<i class="fas fa-arrow-left"></i>
+				</a>
+				<i class="fas fa-tools"></i>
+				<h1>UTILITÁRIOS</h1>
+			</div>
+		</header>
 
-    <main>
-        <div class="content-wrapper">
-            <h1>Extrair Páginas de PDFs</h1>
-            
-            <div class="input-group">
-                <input type="file" id="pdfInput" accept=".pdf" multiple>
-            </div>
-			
-			<div class="input-group">
-                <label for="pageInit">Página inicial:</label>
-                <input type="number" id="pageInit" value="1" min="1" placeholder="Página inicial">
-            </div>
-            
-            <div class="input-group">
-                <label for="pageCount">Número de páginas:</label>
-                <input type="number" id="pageCount" value="4" min="1" placeholder="Número de páginas">
-            </div>
-            
-            <button onclick="processPDFs()">
-                <i class="fas fa-download"></i> Baixar PDFs
-            </button>
-            
-            <div id="status"></div>
-        </div>
-    </main>
+		<main>
+			<div class="content-wrapper">
+				<h1>Extrair Páginas de PDFs</h1>
 
-    <footer>
-        <div class="social-links">
-            <a href="https://github.com/jhonatancassante" target="_blank">
-                <i class="fab fa-github"></i>
-            </a>
-            <a href="https://www.instagram.com/jhonatancassante/" target="_blank">
-                <i class="fab fa-instagram"></i>
-            </a>
-        </div>
-        <div class="copyright">
-            © 2024 Jhonatan Cassante. Todos os direitos reservados.
-        </div>
-    </footer>
-</body>
+				<div class="input-group">
+					<input type="file" id="pdfInput" accept=".pdf" multiple />
+				</div>
+
+				<div class="input-group">
+					<label for="pageInit">Página inicial:</label>
+					<input
+						type="number"
+						id="pageInit"
+						value="1"
+						min="1"
+						placeholder="Página inicial"
+					/>
+				</div>
+
+				<div class="input-group">
+					<label for="pageCount">Número de páginas:</label>
+					<input
+						type="number"
+						id="pageCount"
+						value="4"
+						min="1"
+						placeholder="Número de páginas"
+					/>
+				</div>
+
+				<button id="processBtn">
+					<i class="fas fa-download"></i> Baixar PDFs
+				</button>
+
+				<div id="status"></div>
+			</div>
+		</main>
+
+		<footer>
+			<div class="social-links">
+				<a href="https://github.com/jhonatancassante" target="_blank">
+					<i class="fab fa-github"></i>
+				</a>
+				<a href="https://www.instagram.com/jhonatancassante/" target="_blank">
+					<i class="fab fa-instagram"></i>
+				</a>
+			</div>
+			<div class="copyright">
+				© 2024 Jhonatan Cassante. Todos os direitos reservados.
+			</div>
+		</footer>
+	</body>
 </html>
