@@ -70,19 +70,21 @@ pre {
 }
 
 .upload-section {
-	border: 2px dashed #3498db;
-	padding: 20px;
+	border: 2px dashed #ccc;
+	padding: 30px;
 	text-align: center;
 	border-radius: 6px;
-	background: #f8fafc;
 	cursor: pointer;
 	margin-bottom: 20px;
-	transition: background 0.3s;
+	transition:
+		background-color 0.3s,
+		border-color 0.3s;
 	width: 100%;
 	box-sizing: border-box;
 }
+.upload-section.dragover,
 .upload-section:hover {
-	background: #edf2f7;
-	width: 100%;
-	box-sizing: border-box;
+	background-color: #e3f2fd;
+	border-color: #2196f3;
+	color: #1e88e5;
 }
