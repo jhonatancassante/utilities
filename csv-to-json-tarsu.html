@@ -1,68 +1,51 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Criador de JSON para TARSU (TRSS)</title>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-		<script src="js/csv-to-json.js" defer></script>
-		<link
-			rel="stylesheet"
-			href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
-		/>
-		<link rel="stylesheet" href="css/global.css" />
-		<link rel="stylesheet" href="css/csv-to-json-tarsu.css" />
-	</head>
-	<body>
-		<header>
-			<div class="header-content">
-				<a href="index.html" class="back-btn" title="Voltar ao menu">
-					<i class="fas fa-arrow-left"></i>
-				</a>
-				<i class="fas fa-tools"></i>
-				<h1>UTILITÁRIOS</h1>
-			</div>
-		</header>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criador de JSON para TARSU (TRSS)</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <script src="js/csv-to-json-tarsu.js" defer></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/csv-to-json-tarsu.css">
+</head>
+<body>
+<header>
+    <div class="header-content">
+        <a href="javascript:history.back()" class="back-btn">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+        <i class="fas fa-tools"></i>
+        <h1>UTILITÁRIOS</h1>
+    </div>
+</header>
 
-		<main>
-			<div class="content-wrapper">
-				<h1>Conversor CSV para JSON (Para TARSU (TRSS))</h1>
+<main>
+    <div class="content-wrapper">
+        <h1>Conversor CSV para JSON (Para TARSU (TRSS))</h1>
+        
+        <div id="infoBox" class="info-box">
+            <strong>Filtro ativo:</strong> Este conversor é apenas para CSV de TARSU (TRSS) e extrai exclusivamente as propriedades: <code>ccm</code>, <code>quantidade</code> e <code>valor</code>.
+        </div>
+        
+        <div class="upload-section" onclick="document.getElementById('csvFile').click()">
+            <span id="file-label">Clique aqui para selecionar o arquivo TARSU CSV</span>
+            <input type="file" id="csvFile" accept=".csv">
+        </div>
 
-				<div id="infoBox" class="info-box">
-					<strong>Filtro ativo:</strong> Este conversor é apenas para CSV de
-					TARSU (TRSS) e extrai exclusivamente as propriedades:
-					<code>ccm</code>, <code>quantidade</code> e <code>valor</code>.
-				</div>
+        <div id="errorMessage" class="error"></div>
 
-				<div
-					class="upload-section"
-					id="drop-zone"
-					tabindex="0"
-					onclick="document.getElementById('csvFile').click()"
-				>
-					<span id="file-label"
-						>Clique ou arraste o arquivo TARSU CSV aqui</span
-					>
-					<input type="file" id="csvFile" accept=".csv" />
-				</div>
-
-				<div id="errorMessage" class="error"></div>
-
-				<div class="json-container">
-					<h3>Resultado do JSON Final:</h3>
-					<button
-						id="copyBtn"
-						class="copy-btn"
-						title="Copiar código"
-						style="display: none"
-					>
-						<i class="fa-regular fa-copy"></i>
-					</button>
-					<pre><code id="jsonOutput">O resultado filtrado aparecerá aqui após o envio do arquivo...</code></pre>
-				</div>
-
-				<button id="downloadBtn" class="btn">Baixar JSON</button>
-			</div>
-		</main>
-	</body>
+        <div class="json-container">
+            <h3>Resultado do JSON Final:</h3>
+            <button id="copyBtn" class="copy-btn" title="Copiar código" style="display: none;">
+                <i class="fa-regular fa-copy"></i>
+            </button>
+            <pre><code id="jsonOutput">O resultado filtrado aparecerá aqui após o envio do arquivo...</code></pre>
+        </div>
+		
+		<button id="downloadBtn" class="btn">Baixar JSON</button>
+    </div>
+</main>
+</body>
 </html>
