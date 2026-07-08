@@ -1,92 +1,135 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerador de QR Code</title>
-    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js" defer></script>
-    <script src="js/qrcode.js" defer></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="css/global.css">
-    <link rel="stylesheet" href="css/qrcode.css">
-    <link rel="stylesheet" href="css/color-controls.css">
-</head>
-<body>
-    <header>
-    <div class="header-content">
-        <a href="javascript:history.back()" class="back-btn">
-            <i class="fas fa-arrow-left"></i>
-        </a>
-        <i class="fas fa-tools"></i>
-        <h1>UTILITÁRIOS</h1>
-    </div>
-</header>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Gerador de QR Code</title>
+		<link rel="icon" type="image/png" href="assets/favicon.png" />
+		<link
+			rel="apple-touch-icon"
+			sizes="180x180"
+			href="assets/apple-touch-icon.png"
+		/>
+		<script
+			src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"
+			defer
+		></script>
+		<script src="js/qrcode.js" defer></script>
+		<link
+			rel="stylesheet"
+			href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+		/>
+		<link rel="stylesheet" href="css/global.css" />
+		<link rel="stylesheet" href="css/qrcode.css" />
+		<link rel="stylesheet" href="css/color-controls.css" />
+	</head>
+	<body>
+		<header>
+			<div class="header-content">
+				<a href="index.html" class="back-btn" title="Voltar ao menu">
+					<i class="fas fa-arrow-left"></i>
+				</a>
+				<i class="fas fa-tools"></i>
+				<h1>UTILITÁRIOS</h1>
+			</div>
+		</header>
 
-    <main>
-        <div class="content-wrapper">
-            <h1>Gerador de QR Code</h1>
-            
-            <div class="input-group">
-                <input type="url" id="url-input" placeholder="Digite o link que deseja codificar..." required>
-            </div>
-            
-            <div class="color-controls">
-                <div class="color-option">
-                    <label for="qr-color">Cor do QR Code:</label>
-                    <input type="color" id="qr-color" value="#000000">
-                    <span class="color-preview" id="qr-color-preview" style="background-color: #000000;"></span>
-                </div>
-                
-                <div class="color-option">
-                    <label for="bg-color">Cor do fundo:</label>
-                    <input type="color" id="bg-color" value="#ffffff">
-                    <span class="color-preview" id="bg-color-preview" style="background-color: #ffffff;"></span>
-                </div>
-                
-                <div class="color-option">
-                    <label for="border-color">Cor da borda:</label>
-                    <input type="color" id="border-color" value="#3498db">
-                    <span class="color-preview" id="border-color-preview" style="background-color: #3498db;"></span>
-                </div>
-                
-                <div class="color-option">
-                    <label for="text-color">Cor do texto:</label>
-                    <input type="color" id="text-color" value="#ffffff">
-                    <span class="color-preview" id="text-color-preview" style="background-color: #ffffff;"></span>
-                </div>
-            </div>
-            
-            <button id="generate-btn"><i class="fas fa-qrcode"></i> Gerar QR Code</button>
-            
-            <div class="qr-container" id="qr-container">
-                <div class="qr-border" id="qr-border">
-                    <div id="qrcode"></div>
-                </div>
-                <div class="qr-footer" id="qr-footer">
-                    <i class="fas fa-mobile-alt"></i>
-                    <span>Escaneie-me</span>
-                </div>
-            </div>
-            
-            <button id="download-btn"><i class="fas fa-download"></i> Download QR Code</button>
-        </div>
-    </main>
+		<main>
+			<div class="content-wrapper">
+				<h1>Gerador de QR Code</h1>
 
-    <footer>
-        <div class="social-links">
-            <a href="https://github.com/jhonatancassante" target="_blank">
-                <i class="fab fa-github"></i>
-            </a>
-            <a href="https://www.instagram.com/jhonatancassante/" target="_blank">
-                <i class="fab fa-instagram"></i>
-            </a>
-        </div>
-        <div class="copyright">
-            © 2024 Jhonatan Cassante. Todos os direitos reservados.
-        </div>
-    </footer>
+				<div class="input-group">
+					<input
+						type="url"
+						id="url-input"
+						placeholder="Digite o link que deseja codificar..."
+						required
+					/>
+				</div>
 
-    <!-- Biblioteca para capturar o HTML como imagem -->
-    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-</body>
+				<div class="color-controls">
+					<div class="color-option">
+						<label for="qr-color">Cor do QR Code:</label>
+						<input type="color" id="qr-color" value="#000000" />
+						<span
+							class="color-preview"
+							id="qr-color-preview"
+							style="background-color: #000000"
+						></span>
+					</div>
+
+					<div class="color-option">
+						<label for="bg-color">Cor do fundo:</label>
+						<input type="color" id="bg-color" value="#ffffff" />
+						<span
+							class="color-preview"
+							id="bg-color-preview"
+							style="background-color: #ffffff"
+						></span>
+					</div>
+
+					<div class="color-option">
+						<label for="border-color">Cor da borda:</label>
+						<input type="color" id="border-color" value="#3498db" />
+						<span
+							class="color-preview"
+							id="border-color-preview"
+							style="background-color: #3498db"
+						></span>
+					</div>
+
+					<div class="color-option">
+						<label for="text-color">Cor do texto:</label>
+						<input type="color" id="text-color" value="#ffffff" />
+						<span
+							class="color-preview"
+							id="text-color-preview"
+							style="background-color: #ffffff"
+						></span>
+					</div>
+				</div>
+
+				<button id="generate-btn">
+					<i class="fas fa-qrcode"></i> Gerar QR Code
+				</button>
+
+				<div class="qr-container" id="qr-container">
+					<div class="qr-border" id="qr-border">
+						<div id="qrcode"></div>
+					</div>
+					<div class="qr-footer" id="qr-footer">
+						<i class="fas fa-mobile-alt"></i>
+						<span>Escaneie-me</span>
+					</div>
+				</div>
+
+				<button id="download-btn">
+					<i class="fas fa-download"></i> Download QR Code
+				</button>
+			</div>
+		</main>
+
+		<footer>
+			<div class="social-links">
+				<a href="https://github.com/jhonatancassante" target="_blank">
+					<i class="fab fa-github"></i>
+				</a>
+				<a href="https://www.instagram.com/jhonatancassante/" target="_blank">
+					<i class="fab fa-instagram"></i>
+				</a>
+			</div>
+			<div class="copyright">
+				© 2024 Jhonatan Cassante. Todos os direitos reservados.
+			</div>
+			<a
+				href="https://www.flaticon.com/br/icones-gratis/servicos-de-utilidade-publica"
+				title="serviços de utilidade pública ícones"
+				>Serviços de utilidade pública ícones criados por Maan Icons -
+				Flaticon</a
+			>
+		</footer>
+
+		<!-- Biblioteca para capturar o HTML como imagem -->
+		<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+	</body>
 </html>
