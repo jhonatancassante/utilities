@@ -115,6 +115,7 @@ main {
 	background-color: #3498db;
 	color: white;
 	padding: 25px 15px;
+	margin: 0 15px;
 	border-radius: 8px;
 	text-decoration: none;
 	transition: all 0.3s;
@@ -201,10 +202,13 @@ footer {
 
 @media (min-width: 600px) {
 	main {
-		max-width: 90%;
+		max-width: 85%;
 	}
 	.grid-container {
 		grid-template-columns: repeat(2, 1fr);
+	}
+	.grid-btn {
+		margin: 0;
 	}
 }
 
