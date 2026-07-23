@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="pt-BR">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Unificador de PDFs</title>
+		<link rel="icon" type="image/png" href="assets/favicon.png" />
+		<link
+			rel="apple-touch-icon"
+			sizes="180x180"
+			href="assets/apple-touch-icon.png"
+		/>
+		<script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+		<script src="js/global.js" defer></script>
+		<script src="js/pdf-merger.js" defer></script>
+		<link
+			rel="stylesheet"
+			href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+		/>
+		<link rel="stylesheet" href="css/global.css" />
+		<link rel="stylesheet" href="css/pdf-merger.css" />
+	</head>
+	<body>
+		<header>
+			<div class="header-content">
+				<a href="index.html" class="back-btn" title="Voltar ao menu">
+					<i class="fas fa-arrow-left"></i>
+				</a>
+				<i class="fas fa-tools"></i>
+				<h1>UTILITÁRIOS</h1>
+			</div>
+		</header>
+
+		<main>
+			<div class="content-wrapper">
+				<h1>Unificador de PDFs</h1>
+
+				<div class="info-box">
+					Os arquivos serão ordenados alfabeticamente pelo nome. PDFs com número
+					ímpar de páginas receberão automaticamente uma página em branco ao
+					final para manter a paridade.
+				</div>
+
+				<div class="upload-section" id="drop-zone" tabindex="0">
+					<span id="file-label"
+						>Clique ou arraste seus arquivos PDF aqui (múltiplos arquivos)</span
+					>
+					<input type="file" id="pdfInput" accept=".pdf" multiple />
+				</div>
+
+				<button onclick="mergePDFs()">
+					<i class="fas fa-object-group"></i> Unificar e Baixar PDF
+				</button>
+
+				<div id="status"></div>
+			</div>
+		</main>
+
+		<footer>
+			<div class="social-links">
+				<a
+					href="https://github.com/jhonatancassante"
+					target="_blank"
+					rel="noopener"
+				>
+					<i class="fab fa-github"></i>
+				</a>
+				<a
+					href="https://www.instagram.com/jhonatancassante/"
+					target="_blank"
+					rel="noopener"
+				>
+					<i class="fab fa-instagram"></i>
+				</a>
+			</div>
+			<div class="copyright">
+				© 2026 Jhonatan Cassante. Todos os direitos reservados.
+			</div>
+			<a
+				href="https://www.flaticon.com/br/icones-gratis/servicos-de-utilidade-publica"
+				title="serviços de utilidade pública ícones"
+				class="attribution"
+				target="_blank"
+				rel="noopener"
+			>
+				Ícones por Maan Icons - Flaticon
+			</a>
+		</footer>
+	</body>
+</html>

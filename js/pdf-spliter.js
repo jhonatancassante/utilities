@@ -2,21 +2,26 @@
 
 const fileLabel = document.getElementById('file-label');
 const status = document.getElementById('status');
-let selectedFiles = []; // Armazena os arquivos em escopo global para a função processPDFs usar
+let selectedFiles = []; // Armazena os arquivos acumulados
 
 // Inicializa o utilitário global passando os IDs e o callback
 setupUploadSection('drop-zone', 'pdfInput', function (files) {
-    // Filtra para garantir que são PDFs
-    const validFiles = Array.from(files).filter(file => file.name.endsWith('.pdf'));
+    const validFiles = Array.from(files).filter(file => file.name.toLowerCase().endsWith('.pdf'));
 
     if (validFiles.length === 0) {
         status.textContent = "Erro: Por favor, selecione apenas arquivos .pdf";
-        status.style.color = "#e74c3c"; // Vermelho de erro
+        status.style.color = "#e74c3c";
         return;
     }
 
-    // Guarda os arquivos válidos e atualiza a interface
-    selectedFiles = validFiles;
+    // Acumula os novos arquivos sem duplicar os existentes
+    validFiles.forEach(newFile => {
+        const isDuplicate = selectedFiles.some(existingFile => existingFile.name === newFile.name);
+        if (!isDuplicate) {
+            selectedFiles.push(newFile);
+        }
+    });
+
     status.textContent = "";
 
     if (selectedFiles.length === 1) {

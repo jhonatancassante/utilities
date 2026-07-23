@@ -1,0 +1,8 @@
+/* css/pdf-merger.css */
+
+#status {
+	margin-top: 20px;
+	font-weight: bold;
+	color: #2c3e50;
+	word-break: break-word;
+}
