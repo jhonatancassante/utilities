@@ -1,28 +1,30 @@
-// js/pdf-spliter.js
-
 const fileLabel = document.getElementById('file-label');
 const status = document.getElementById('status');
 let selectedFiles = []; // Armazena os arquivos acumulados
 
 // Inicializa o utilitário global passando os IDs e o callback
 setupUploadSection('drop-zone', 'pdfInput', function (files) {
-    const validFiles = Array.from(files).filter(file => file.name.toLowerCase().endsWith('.pdf'));
+    const validFiles = Array.from(files).filter((file) =>
+        file.name.toLowerCase().endsWith('.pdf')
+    );
 
     if (validFiles.length === 0) {
-        status.textContent = "Erro: Por favor, selecione apenas arquivos .pdf";
-        status.style.color = "#e74c3c";
+        status.textContent = 'Erro: Por favor, selecione apenas arquivos .pdf';
+        status.style.color = '#e74c3c';
         return;
     }
 
     // Acumula os novos arquivos sem duplicar os existentes
-    validFiles.forEach(newFile => {
-        const isDuplicate = selectedFiles.some(existingFile => existingFile.name === newFile.name);
+    validFiles.forEach((newFile) => {
+        const isDuplicate = selectedFiles.some(
+            (existingFile) => existingFile.name === newFile.name
+        );
         if (!isDuplicate) {
             selectedFiles.push(newFile);
         }
     });
 
-    status.textContent = "";
+    status.textContent = '';
 
     if (selectedFiles.length === 1) {
         fileLabel.textContent = selectedFiles[0].name;
@@ -36,17 +38,18 @@ async function processPDFs() {
     const pageCount = Number(document.getElementById('pageCount').value);
 
     if (selectedFiles.length === 0) {
-        status.textContent = "Selecione pelo menos um arquivo PDF!";
-        status.style.color = "#e74c3c";
+        status.textContent = 'Selecione pelo menos um arquivo PDF!';
+        status.style.color = '#e74c3c';
         return;
     }
 
-    status.textContent = "Processando...";
-    status.style.color = "#2c3e50";
-    const zip = new JSZip();
+    status.textContent = 'Processando...';
+    status.style.color = '#2c3e50';
 
     try {
-        await Promise.all(selectedFiles.map(async (file) => {
+        // CASO 1: Apenas 1 arquivo selecionado -> Baixa diretamente o PDF
+        if (selectedFiles.length === 1) {
+            const file = selectedFiles[0];
             const arrayBuffer = await file.arrayBuffer();
             const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
 
@@ -55,7 +58,9 @@ async function processPDFs() {
             const endPage = startPage + pageCount;
 
             if (startPage < 0 || endPage > totalPages) {
-                throw new Error(`Intervalo inválido em "${file.name}": o documento tem apenas ${totalPages} página(s).`);
+                throw new Error(
+                    `Intervalo inválido em "${file.name}": o documento tem apenas ${totalPages} página(s).`
+                );
             }
 
             const pageIndices = [];
@@ -65,34 +70,74 @@ async function processPDFs() {
 
             const newPdf = await PDFLib.PDFDocument.create();
             const pages = await newPdf.copyPages(pdfDoc, pageIndices);
-            pages.forEach(page => newPdf.addPage(page));
+            pages.forEach((page) => newPdf.addPage(page));
 
             const pdfBytes = await newPdf.save();
             const blob = new Blob([pdfBytes], { type: 'application/pdf' });
 
-            zip.file(`${pageCount}_pages_from_${pageInit}_${file.name}`, blob);
-        }));
+            const downloadLink = document.createElement('a');
+            downloadLink.href = URL.createObjectURL(blob);
+            downloadLink.download = `${pageCount}_pages_from_${pageInit}_${file.name}`;
+            downloadLink.click();
+            URL.revokeObjectURL(downloadLink.href);
+        }
+        // CASO 2: Mais de 1 arquivo selecionado -> Compacta tudo em ZIP
+        else {
+            const zip = new JSZip();
 
-        const zipBlob = await zip.generateAsync({ type: 'blob' });
-        const downloadLink = document.createElement('a');
-        downloadLink.href = URL.createObjectURL(zipBlob);
+            await Promise.all(
+                selectedFiles.map(async (file) => {
+                    const arrayBuffer = await file.arrayBuffer();
+                    const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
 
-        const now = new Date();
-        const timestamp =
-            now.getFullYear().toString() +
-            (now.getMonth() + 1).toString().padStart(2, '0') +
-            now.getDate().toString().padStart(2, '0') +
-            now.getHours().toString().padStart(2, '0') +
-            now.getMinutes().toString().padStart(2, '0') +
-            now.getSeconds().toString().padStart(2, '0');
+                    const totalPages = pdfDoc.getPageCount();
+                    const startPage = Math.max(0, pageInit - 1);
+                    const endPage = startPage + pageCount;
 
-        downloadLink.download = `${timestamp}.zip`;
-        downloadLink.click();
+                    if (startPage < 0 || endPage > totalPages) {
+                        throw new Error(
+                            `Intervalo inválido em "${file.name}": o documento tem apenas ${totalPages} página(s).`
+                        );
+                    }
 
-        status.textContent = "Download iniciado!";
-        status.style.color = "#2ecc71"; // Verde de sucesso
+                    const pageIndices = [];
+                    for (let i = startPage; i < endPage; i++) {
+                        pageIndices.push(i);
+                    }
+
+                    const newPdf = await PDFLib.PDFDocument.create();
+                    const pages = await newPdf.copyPages(pdfDoc, pageIndices);
+                    pages.forEach((page) => newPdf.addPage(page));
+
+                    const pdfBytes = await newPdf.save();
+                    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+
+                    zip.file(`${pageCount}_pages_from_${pageInit}_${file.name}`, blob);
+                })
+            );
+
+            const zipBlob = await zip.generateAsync({ type: 'blob' });
+            const downloadLink = document.createElement('a');
+            downloadLink.href = URL.createObjectURL(zipBlob);
+
+            const now = new Date();
+            const timestamp =
+                now.getFullYear().toString() +
+                (now.getMonth() + 1).toString().padStart(2, '0') +
+                now.getDate().toString().padStart(2, '0') +
+                now.getHours().toString().padStart(2, '0') +
+                now.getMinutes().toString().padStart(2, '0') +
+                now.getSeconds().toString().padStart(2, '0');
+
+            downloadLink.download = `${timestamp}.zip`;
+            downloadLink.click();
+            URL.revokeObjectURL(downloadLink.href);
+        }
+
+        status.textContent = 'Download iniciado!';
+        status.style.color = '#2ecc71'; // Verde de sucesso
     } catch (error) {
-        status.textContent = "Erro ao processar arquivos: " + error.message;
-        status.style.color = "#e74c3c";
+        status.textContent = 'Erro ao processar arquivos: ' + error.message;
+        status.style.color = '#e74c3c';
     }
 }
