@@ -2,6 +2,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const urlInput = document.getElementById('url-input');
     const generateBtn = document.getElementById('generate-btn');
     const downloadBtn = document.getElementById('download-btn');
+    const clearBtn = document.getElementById('clear-btn');
+    const btnGroup = document.getElementById('btnGroup');
     const qrcodeDiv = document.getElementById('qrcode');
     const qrContainer = document.getElementById('qr-container');
     const qrBorder = document.getElementById('qr-border');
@@ -62,9 +64,9 @@ document.addEventListener('DOMContentLoaded', function () {
             correctLevel: QRCode.CorrectLevel.H
         });
 
-        // Mostra o container do QR Code
+        // Mostra o container do QR Code e os botões de download/limpar
         qrContainer.style.display = 'block';
-        downloadBtn.style.display = 'inline-block';
+        btnGroup.style.display = 'flex';
 
         // Rola a página para mostrar o QR Code
         qrContainer.scrollIntoView({ behavior: 'smooth' });
@@ -95,5 +97,15 @@ document.addEventListener('DOMContentLoaded', function () {
             link.href = canvas.toDataURL('image/png');
             link.click();
         });
+    });
+
+    // Limpar: volta a página ao estado inicial
+    clearBtn.addEventListener('click', function () {
+        urlInput.value = '';
+        qrcodeDiv.innerHTML = '';
+        qrContainer.style.display = 'none';
+        btnGroup.style.display = 'none';
+        qrcode = null;
+        urlInput.focus();
     });
 });
