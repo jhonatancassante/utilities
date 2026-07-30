@@ -1,7 +1,15 @@
+// js/cpf-tester.js
+
 document.addEventListener('DOMContentLoaded', () => {
     const cpfInput = document.getElementById('cpfInput');
     const cpfStatus = document.getElementById('cpfStatus');
     const testBtn = document.getElementById('testBtn');
+
+    const dvSection = document.getElementById('dvSection');
+    const baseCpf = document.getElementById('baseCpf');
+    const correctDv = document.getElementById('correctDv');
+    const formattedCorrectCpf = document.getElementById('formattedCorrectCpf');
+
     const resultsContainer = document.getElementById('resultsContainer');
     const resultsList = document.getElementById('resultsList');
     const resultsCount = document.getElementById('resultsCount');
@@ -9,16 +17,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- 1. MÁSCARA E VALIDAÇÃO EM TEMPO REAL ---
 
     cpfInput.addEventListener('input', (e) => {
-        let value = e.target.value.replace(/\D/g, ''); // Remove não dígitos
+        let value = e.target.value.replace(/\D/g, '');
 
         if (value.length > 11) {
             value = value.slice(0, 11);
         }
 
-        // Aplica a máscara no input
         e.target.value = formatCPF(value);
 
-        // Valida dinamicamente caso o CPF esteja preenchido por completo
         if (value.length === 11) {
             if (isValidCPF(value)) {
                 cpfInput.className = 'valid';
@@ -45,27 +51,61 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        // A. Exibe o Dígito Verificador Correto para os primeiros 9 dígitos
+        showCorrectVerifiers(rawCPF);
+
+        // B. Testa e exibe todas as outras combinações válidas por troca de 1 dígito
         const validVariations = generateAndTestCPFVariations(rawCPF);
-        displayResults(validVariations, rawCPF);
+        displayResults(validVariations);
     });
 
-    // --- 3. LÓGICA DE TESTE DE TODAS AS POSSIBILIDADES DE ERRO ---
+    // --- 3. CÁLCULO E EXIBIÇÃO DO DÍGITO VERIFICADOR CORRETO ---
+
+    function showCorrectVerifiers(cpf) {
+        const base9 = cpf.slice(0, 9);
+        const calculatedDV = calculateVerifiers(base9);
+        const correctCPF = base9 + calculatedDV;
+
+        baseCpf.textContent = formatCPF(base9 + '00').slice(0, 11); // Exibe no formato 000.000.000
+        correctDv.textContent = calculatedDV;
+        formattedCorrectCpf.textContent = formatCPF(correctCPF);
+
+        dvSection.style.display = 'block';
+    }
+
+    function calculateVerifiers(base9) {
+        // Cálculo do 1º dígito
+        let sum = 0;
+        for (let i = 0; i < 9; i++) {
+            sum += parseInt(base9.charAt(i)) * (10 - i);
+        }
+        let rev1 = 11 - (sum % 11);
+        if (rev1 === 10 || rev1 === 11) rev1 = 0;
+
+        // Cálculo do 2º dígito
+        const base10 = base9 + rev1;
+        sum = 0;
+        for (let i = 0; i < 10; i++) {
+            sum += parseInt(base10.charAt(i)) * (11 - i);
+        }
+        let rev2 = 11 - (sum % 11);
+        if (rev2 === 10 || rev2 === 11) rev2 = 0;
+
+        return `${rev1}${rev2}`;
+    }
+
+    // --- 4. TESTE DE TODAS AS POSSIBILIDADES DE ERRO (VARREDURA POSIÇÃO A POSIÇÃO) ---
 
     function generateAndTestCPFVariations(originalCPF) {
         const validList = [];
-        const uniqueSet = new Set(); // Para evitar duplicados
+        const uniqueSet = new Set();
 
         const digits = originalCPF.split('');
 
-        // Varre cada uma das 11 posições do CPF
         for (let pos = 0; pos < 11; pos++) {
-            const originalDigit = digits[pos];
-
-            // Para cada posição, testa alterar por dígitos de 0 a 9
             for (let d = 0; d <= 9; d++) {
                 const currentDigitStr = d.toString();
 
-                // Cria uma cópia com a alteração na posição atual
                 const tempDigits = [...digits];
                 tempDigits[pos] = currentDigitStr;
                 const candidateCPF = tempDigits.join('');
@@ -84,36 +124,19 @@ document.addEventListener('DOMContentLoaded', () => {
         return validList;
     }
 
-    // --- 4. ALGORITMO OFICIAL DE VALIDAÇÃO DE CPF (MÓDULO 11) ---
+    // --- 5. ALGORITMO OFICIAL DE VALIDAÇÃO DO CPF (MÓDULO 11) ---
 
     function isValidCPF(cpf) {
         if (cpf.length !== 11) return false;
-
-        // Rejeita sequências repetidas conhecidas (Ex: 111.111.111-11)
         if (/^(\d)\1{10}$/.test(cpf)) return false;
 
-        // Validação do Primeiro Dígito Verificador
-        let sum = 0;
-        for (let i = 0; i < 9; i++) {
-            sum += parseInt(cpf.charAt(i)) * (10 - i);
-        }
-        let rev = 11 - (sum % 11);
-        if (rev === 10 || rev === 11) rev = 0;
-        if (rev !== parseInt(cpf.charAt(9))) return false;
+        const base9 = cpf.slice(0, 9);
+        const expectedDV = calculateVerifiers(base9);
 
-        // Validação do Segundo Dígito Verificador
-        sum = 0;
-        for (let i = 0; i < 10; i++) {
-            sum += parseInt(cpf.charAt(i)) * (11 - i);
-        }
-        rev = 11 - (sum % 11);
-        if (rev === 10 || rev === 11) rev = 0;
-        if (rev !== parseInt(cpf.charAt(10))) return false;
-
-        return true;
+        return cpf.slice(9) === expectedDV;
     }
 
-    // --- 5. FUNÇÕES AUXILIARES DE FORMATAÇÃO E EXIBIÇÃO ---
+    // --- 6. FUNÇÕES AUXILIARES DE FORMATAÇÃO E EXIBIÇÃO ---
 
     function formatCPF(cpf) {
         return cpf
@@ -122,7 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
             .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
     }
 
-    function displayResults(results, originalCPF) {
+    function displayResults(results) {
         resultsList.innerHTML = '';
         resultsCount.textContent = results.length;
         resultsContainer.style.display = 'block';

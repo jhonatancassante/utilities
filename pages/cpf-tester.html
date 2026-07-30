@@ -35,10 +35,9 @@
 				<h1>Testador de Erros de CPF</h1>
 
 				<div class="info-box">
-					<strong>Como funciona:</strong> Digite um CPF. A ferramenta irá testar
-					a substituição de cada dígito por números de 0 a 9 para encontrar
-					todas as combinações válidas possíveis decorrentes de um erro de
-					digitação.
+					<strong>Como funciona:</strong> Digite um CPF. A ferramenta irá
+					calcular o dígito verificador correto para a base digitada e testar
+					trocas em cada posição para encontrar combinações válidas.
 				</div>
 
 				<div class="cpf-input-container">
@@ -54,6 +53,21 @@
 
 				<button id="testBtn">Testar Variações</button>
 
+				<!-- NOVO: Seção do Dígito Verificador Correto -->
+				<div id="dvSection" class="dv-box" style="display: none">
+					<h3>
+						<i class="fas fa-check-circle"></i> Dígito Verificador Correto
+					</h3>
+					<p>
+						Para a base <strong id="baseCpf">000.000.000</strong>, os dígitos
+						corretos são <strong id="correctDv">00</strong>:
+					</p>
+					<div id="formattedCorrectCpf" class="correct-cpf-display">
+						000.000.000-00
+					</div>
+				</div>
+
+				<!-- Lista de Outras Variações Encontradas -->
 				<div
 					id="resultsContainer"
 					class="results-container"
@@ -61,7 +75,8 @@
 				>
 					<div class="results-header">
 						<h3>
-							Combinações Válidas Encontradas (<span id="resultsCount">0</span
+							Outras Combinações Válidas Encontradas (<span id="resultsCount"
+								>0</span
 							>):
 						</h3>
 					</div>
