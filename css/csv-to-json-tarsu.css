@@ -1,64 +1,108 @@
-/* css/csv-to-json-tarsu.css */
+/* ===== CSV → JSON / TARSU ===== */
+.upload-section {
+	border: 2px dashed var(--border);
+	border-radius: var(--radius);
+	padding: 2.5rem 1.5rem;
+	text-align: center;
+	cursor: pointer;
+	transition:
+		background-color var(--transition),
+		border-color var(--transition),
+		color var(--transition);
+	background-color: var(--bg-card);
+	color: var(--text-secondary);
+	width: 100%;
+	box-sizing: border-box;
+	margin-bottom: 1.5rem;
+}
+.upload-section:hover,
+.upload-section.dragover {
+	background-color: var(--primary-light);
+	border-color: var(--primary);
+	color: var(--primary);
+}
+.upload-section input[type='file'] {
+	display: none;
+}
+.upload-section i {
+	font-size: 2.5rem;
+	display: block;
+	margin-bottom: 0.5rem;
+	color: var(--primary);
+}
 
 .json-container {
 	position: relative;
-	margin-top: 20px;
+	margin-top: 1.5rem;
 	width: 100%;
-	min-width: 0;
 	box-sizing: border-box;
 }
 
-pre {
-	background: #272822;
-	color: #f8f8f2;
-	padding: 25px;
-	border-radius: 4px;
+.json-container pre {
+	background: #1e293b;
+	color: #e2e8f0;
+	padding: 1.5rem;
+	border-radius: var(--radius-sm);
 	overflow-x: auto;
-	max-height: 250px;
-	font-size: 13px;
+	max-height: 280px;
+	font-size: 0.85rem;
 	text-align: left;
-	margin-top: 10px;
+	margin-top: 0.5rem;
 	max-width: 100%;
 	box-sizing: border-box;
 	white-space: pre-wrap;
-	word-break: break-all;
+	word-break: break-word;
+	border: 1px solid var(--border);
 }
 
 .copy-btn {
 	position: absolute;
-	right: 15px;
-	top: 60px;
-	background: rgba(255, 255, 255, 0.15);
-	color: #f8f8f2;
+	right: 0.75rem;
+	top: 0.75rem;
+	background: rgba(255, 255, 255, 0.1);
+	color: #e2e8f0;
 	border: 1px solid rgba(255, 255, 255, 0.2);
-	padding: 6px;
-	font-size: 12px;
-	border-radius: 4px;
+	padding: 0.4rem 0.6rem;
+	font-size: 0.8rem;
+	border-radius: var(--radius-sm);
 	cursor: pointer;
-	transition: all 0.2s ease;
-	margin: 0;
+	transition: all var(--transition);
 	display: inline-flex;
 	align-items: center;
-	gap: 6px;
+	gap: 0.3rem;
 	z-index: 10;
 }
-
 .copy-btn i {
-	font-size: 14px;
-	margin: 0;
+	font-size: 1rem;
 }
-
 .copy-btn:hover {
-	background: #3498db;
-	color: white;
-	border-color: #3498db;
-	transform: none;
-	opacity: 1;
+	background: var(--primary);
+	color: #fff;
+	border-color: var(--primary);
+}
+.copy-btn.copied {
+	background: #22c55e;
+	border-color: #22c55e;
+	color: #fff;
 }
 
-.copy-btn.copied {
-	background: #2ecc71;
-	border-color: #2ecc71;
-	color: white;
-	padding: 6px 12px;
+/* ===== RESPONSIVO ===== */
+@media (max-width: 480px) {
+	.upload-section {
+		padding: 1.5rem 1rem;
+	}
+	.upload-section i {
+		font-size: 2rem;
+	}
+	.json-container pre {
+		font-size: 0.75rem;
+		padding: 1rem;
+		max-height: 200px;
+	}
+	.copy-btn {
+		top: 0.5rem;
+		right: 0.5rem;
+		padding: 0.3rem 0.5rem;
+		font-size: 0.7rem;
+	}
 }

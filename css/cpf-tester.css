@@ -1,138 +1,154 @@
-/* css/cpf-tester.css */
-
+/* ===== CPF TESTER ===== */
 .cpf-input-container {
 	position: relative;
-	margin-bottom: 20px;
+	margin-bottom: 1.5rem;
 }
 
 .cpf-input-container input {
-	width: 100%;
-	font-size: 1.2rem;
+	font-size: 1.25rem;
 	text-align: center;
 	letter-spacing: 1px;
-	padding: 12px;
-	border: 2px solid var(--border-color);
-	background-color: var(--input-bg);
-	color: var(--input-text);
-	border-radius: 8px;
-	outline: none;
-	transition: border-color 0.3s ease;
+	padding: 0.75rem;
 }
 
 .cpf-input-container input.valid {
-	border-color: #2ecc71;
-	background-color: rgba(46, 204, 113, 0.1);
+	border-color: #22c55e;
+	background-color: rgba(34, 197, 94, 0.08);
 }
-
 .cpf-input-container input.invalid {
-	border-color: #e74c3c;
-	background-color: rgba(231, 76, 60, 0.1);
+	border-color: #ef4444;
+	background-color: rgba(239, 68, 68, 0.08);
 }
 
 .status-badge {
-	margin-top: 5px;
+	margin-top: 0.5rem;
 	font-size: 0.9rem;
-	font-weight: bold;
+	font-weight: 600;
+	display: flex;
+	align-items: center;
+	gap: 0.4rem;
 }
-
 .status-badge.valid {
-	color: #2ecc71;
+	color: #22c55e;
 }
-
 .status-badge.invalid {
-	color: #e74c3c;
+	color: #ef4444;
 }
 
-/* Bloco de Dígito Verificador Correto */
+/* Bloco do dígito verificador */
 .dv-box {
-	background-color: var(--info-bg);
-	border: 1px solid #3498db;
-	border-radius: 8px;
-	padding: 15px;
-	margin-top: 25px;
+	background-color: var(--bg-card);
+	border: 1px solid var(--border);
+	border-radius: var(--radius);
+	padding: 1.5rem;
+	margin-top: 1.5rem;
 	text-align: center;
-	color: var(--text-primary);
+	box-shadow: var(--shadow-sm);
 }
-
 .dv-box h3 {
-	margin: 0 0 10px 0;
+	margin: 0 0 0.5rem;
 	font-size: 1.1rem;
-	color: #3498db;
+	color: var(--primary);
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	gap: 8px;
+	gap: 0.5rem;
 }
-
 .dv-box p {
-	margin: 0 0 10px 0;
+	margin: 0 0 0.75rem;
 	font-size: 0.95rem;
+	color: var(--text-secondary);
 }
-
-.correct-cpf-display {
+.dv-box .correct-cpf-display {
 	font-family: monospace;
-	font-size: 1.3rem;
-	font-weight: bold;
-	background: var(--bg-card);
-	color: #2ecc71;
-	padding: 8px 15px;
-	border-radius: 6px;
+	font-size: 1.4rem;
+	font-weight: 700;
+	background: var(--primary-light);
+	color: var(--primary);
+	padding: 0.5rem 1.25rem;
+	border-radius: var(--radius-sm);
 	display: inline-block;
-	border: 1px dashed #2ecc71;
+	border: 1px dashed var(--primary);
 }
 
-/* Lista de Resultados */
+/* Lista de resultados */
 .results-container {
-	margin-top: 25px;
+	margin-top: 2rem;
 	text-align: left;
 }
 
 .results-header {
 	display: flex;
 	justify-content: space-between;
-	align-items: center;
-	margin-bottom: 15px;
+	align-items: baseline;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	margin-bottom: 0.75rem;
+}
+.results-header h3 {
+	font-size: 1.1rem;
+	font-weight: 600;
+	margin: 0;
+	color: var(--text);
+}
+.results-header h3 span {
+	color: var(--primary);
 }
 
 .results-list {
 	list-style: none;
 	padding: 0;
 	margin: 0;
-	max-height: 250px;
+	max-height: 260px;
 	overflow-y: auto;
-	border: 1px solid var(--border-color);
-	border-radius: 8px;
+	border: 1px solid var(--border);
+	border-radius: var(--radius-sm);
 	background: var(--bg-card);
+	box-shadow: var(--shadow-sm);
 }
 
 .results-list li {
-	padding: 10px 15px;
-	border-bottom: 1px solid var(--border-color);
+	padding: 0.7rem 1rem;
+	border-bottom: 1px solid var(--border);
 	font-family: monospace;
-	font-size: 1.05rem;
+	font-size: 1rem;
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	color: var(--text-primary);
+	color: var(--text);
 }
-
 .results-list li:last-child {
 	border-bottom: none;
 }
 
 .results-list li .badge {
-	font-size: 0.75rem;
-	padding: 3px 8px;
-	border-radius: 12px;
-	background-color: var(--info-bg);
-	color: #3498db;
+	font-size: 0.7rem;
+	font-weight: 600;
+	padding: 0.15rem 0.6rem;
+	border-radius: 9999px;
+	background-color: var(--primary-light);
+	color: var(--primary);
 }
 
 .results-list li.original-cpf {
-	background-color: rgba(46, 204, 113, 0.15);
+	background-color: rgba(34, 197, 94, 0.1);
+	border-left: 3px solid #22c55e;
+}
+.results-list li.original-cpf .badge {
+	background-color: #22c55e;
+	color: #fff;
 }
 
-.results-list li.original-cpf .badge {
-	background-color: #2ecc71;
-	color: #fff;
+/* ===== RESPONSIVO ===== */
+@media (max-width: 480px) {
+	.dv-box .correct-cpf-display {
+		font-size: 1.1rem;
+		padding: 0.4rem 0.8rem;
+	}
+	.results-list li {
+		font-size: 0.9rem;
+		padding: 0.5rem 0.75rem;
+		flex-wrap: wrap;
+		gap: 0.25rem;
+	}
 }

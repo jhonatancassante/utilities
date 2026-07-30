@@ -1,53 +1,90 @@
-/* css/index.css */
-
+/* ===== HOME GRID ===== */
 .grid-container {
 	display: grid;
-	gap: 15px;
-	grid-template-columns: repeat(1, 1fr);
-	width: 90%;
-	align-content: start;
-	padding: 20px 0;
+	gap: 1.5rem;
+	grid-template-columns: 1fr;
+	width: 100%;
+	max-width: 1200px;
+	margin: 0 auto;
+	padding: 0.5rem 0;
 }
 
 .grid-btn {
-	background-color: #3498db;
-	color: white;
-	padding: 25px 15px;
-	margin: 0 15px;
-	border-radius: 8px;
+	background-color: var(--bg-card);
+	border: 1px solid var(--border);
+	border-radius: var(--radius);
+	padding: 2rem 1rem;
 	text-decoration: none;
-	transition: all 0.3s;
+	color: var(--text);
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-}
-
-.grid-btn:hover {
-	opacity: 0.9;
-	transform: translateY(-2px);
+	justify-content: center;
+	gap: 0.75rem;
+	transition:
+		transform var(--transition),
+		box-shadow var(--transition),
+		border-color var(--transition),
+		background-color var(--transition);
+	box-shadow: var(--shadow-sm);
+	text-align: center;
 }
 
 .grid-btn i {
-	font-size: 2em;
-	margin-bottom: 10px;
+	font-size: 2.5rem;
+	color: var(--primary);
+	transition: transform var(--transition);
 }
 
 .grid-btn span {
-	font-size: 0.9em;
+	font-size: 1rem;
+	font-weight: 500;
+	color: var(--text-secondary);
 }
 
-/* Responsividade exclusiva da grade da Home */
-@media (min-width: 600px) {
+.grid-btn:hover {
+	transform: translateY(-4px);
+	box-shadow: var(--shadow-lg);
+	border-color: var(--primary);
+	background-color: var(--primary-light);
+}
+.grid-btn:hover i {
+	transform: scale(1.05);
+}
+
+/* ===== RESPONSIVO ===== */
+@media (min-width: 480px) {
 	.grid-container {
 		grid-template-columns: repeat(2, 1fr);
 	}
-	.grid-btn {
-		margin: 0;
+}
+
+@media (min-width: 768px) {
+	.grid-container {
+		grid-template-columns: repeat(3, 1fr);
 	}
 }
 
-@media (min-width: 900px) {
+@media (min-width: 1024px) {
 	.grid-container {
 		grid-template-columns: repeat(4, 1fr);
+	}
+	.grid-btn {
+		padding: 2.5rem 1rem;
+	}
+	.grid-btn i {
+		font-size: 3rem;
+	}
+}
+
+@media (max-width: 400px) {
+	.grid-btn {
+		padding: 1.5rem 0.75rem;
+	}
+	.grid-btn i {
+		font-size: 2rem;
+	}
+	.grid-btn span {
+		font-size: 0.9rem;
 	}
 }
