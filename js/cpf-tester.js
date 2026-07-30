@@ -59,6 +59,14 @@ document.addEventListener('DOMContentLoaded', () => {
         displayResults(validVariations);
     });
 
+    // Permite disparar a busca ao pressionar a tecla Enter no campo de CPF
+    cpfInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault(); // Evita recarregar a página caso esteja em um form
+            testBtn.click(); // Dispara o clique do botão
+        }
+    });
+
     // --- 3. CÁLCULO E EXIBIÇÃO DO DÍGITO VERIFICADOR CORRETO ---
 
     function showCorrectVerifiers(cpf) {
