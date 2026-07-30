@@ -1,3 +1,31 @@
+:root {
+	--bg-primary: #f5f5f5;
+	--bg-card: #ffffff;
+	--text-primary: #2c3e50;
+	--text-secondary: #555555;
+	--header-bg: #3498db;
+	--header-text: #ffffff;
+	--border-color: #dddddd;
+	--input-bg: #ffffff;
+	--input-text: #2c3e50;
+	--info-bg: #e8f4fd;
+	--footer-bg: rgba(52, 152, 219, 0.08);
+}
+
+[data-theme='dark'] {
+	--bg-primary: #121212;
+	--bg-card: #1e1e1e;
+	--text-primary: #e0e0e0;
+	--text-secondary: #aaaaaa;
+	--header-bg: #1f2937;
+	--header-text: #ffffff;
+	--border-color: #333333;
+	--input-bg: #2d2d2d;
+	--input-text: #ffffff;
+	--info-bg: #1e293b;
+	--footer-bg: #181818;
+}
+
 * {
 	box-sizing: border-box;
 }
@@ -8,16 +36,20 @@ body {
 	margin: 0;
 	padding: 0;
 	text-align: center;
-	background-color: #f5f5f5;
+	background-color: var(--bg-primary);
+	color: var(--text-primary);
 	display: flex;
 	align-items: center;
 	flex-direction: column;
 	box-sizing: border-box;
 	min-height: 100vh;
+	transition:
+		background-color 0.3s ease,
+		color 0.3s ease;
 }
 
 h1 {
-	color: #2c3e50;
+	color: var(--text-primary);
 	margin-bottom: 30px;
 }
 
@@ -28,7 +60,9 @@ h1 {
 input {
 	padding: 12px;
 	width: 80%;
-	border: 1px solid #ddd;
+	border: 1px solid var(--border-color);
+	background-color: var(--input-bg);
+	color: var(--input-text);
 	border-radius: 8px;
 	font-size: 16px;
 	margin-bottom: 10px;
@@ -70,28 +104,33 @@ button.btn-danger:hover {
 }
 
 header {
-	background-color: #3498db;
+	background-color: var(--header-bg);
 	width: 100%;
-	padding: 20px;
+	padding: 0 20px;
 	height: 80px;
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	position: relative;
+	transition: background-color 0.3s ease;
 }
 
 .header-content {
 	max-width: 600px;
+	width: 100%;
 	margin: 0 auto;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	gap: 15px;
-	color: white;
+	color: var(--header-text);
+	position: relative;
 }
 
 .back-btn {
 	color: #fff;
-	margin-right: 50px;
+	position: absolute;
+	left: 0;
 	text-decoration: none;
 	transition: color 0.3s ease;
 }
@@ -106,8 +145,33 @@ header i {
 }
 
 header h1 {
-	color: white;
+	color: var(--header-text);
 	margin: 0;
+}
+
+/* Botão Alternar Tema */
+.theme-toggle-btn {
+	position: absolute;
+	right: 0;
+	background: transparent;
+	border: none;
+	color: var(--header-text);
+	font-size: 0.75rem;
+	cursor: pointer;
+	padding: 8px;
+	margin: 0;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition:
+		transform 0.3s ease,
+		background-color 0.3s ease;
+}
+
+.theme-toggle-btn:hover {
+	background-color: rgba(255, 255, 255, 0.15);
+	transform: scale(1.1);
 }
 
 main {
@@ -131,7 +195,7 @@ main {
 #status {
 	margin-top: 15px;
 	font-weight: bold;
-	color: #2c3e50;
+	color: var(--text-primary);
 	word-break: break-word;
 }
 
@@ -142,18 +206,18 @@ main {
 }
 
 .info-box {
-	background-color: #e8f4fd;
+	background-color: var(--info-bg);
 	border-left: 4px solid #3498db;
 	padding: 10px 15px;
 	margin-bottom: 20px;
 	font-size: 14px;
-	color: #2c3e50;
+	color: var(--text-primary);
 	text-align: left;
 }
 
 /* Upload Dropzone */
 .upload-section {
-	border: 2px dashed #ccc;
+	border: 2px dashed var(--border-color);
 	padding: 30px;
 	text-align: center;
 	border-radius: 6px;
@@ -169,7 +233,7 @@ main {
 
 .upload-section.dragover,
 .upload-section:hover {
-	background-color: #e3f2fd;
+	background-color: var(--info-bg);
 	border-color: #2196f3;
 	color: #1e88e5;
 }
@@ -179,7 +243,7 @@ main {
 }
 
 footer {
-	background-color: rgba(52, 152, 219, 0.08);
+	background-color: var(--footer-bg);
 	padding: 30px 20px;
 	width: 100%;
 	text-align: center;
@@ -188,6 +252,7 @@ footer {
 	align-items: center;
 	gap: 12px;
 	margin-top: auto;
+	transition: background-color 0.3s ease;
 }
 
 .social-links {
@@ -197,7 +262,7 @@ footer {
 }
 
 .social-links a {
-	color: #2c3e50;
+	color: var(--text-primary);
 	font-size: 1.6em;
 	transition:
 		color 0.3s,
@@ -211,13 +276,13 @@ footer {
 
 .copyright {
 	font-size: 14px;
-	color: #555;
+	color: var(--text-secondary);
 	font-weight: 500;
 }
 
 .attribution {
 	font-size: 11px;
-	color: #888;
+	color: var(--text-secondary);
 	text-decoration: none;
 	transition: color 0.3s;
 }

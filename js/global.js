@@ -1,4 +1,44 @@
 /**
+ * Inicializa a gestão de tema (Light / Dark).
+ * Lê a preferência salva no localStorage (padrão 'light') e configura os ouvintes no botão de alternância.
+ */
+function initTheme() {
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    setTheme(savedTheme);
+
+    const themeToggleBtn = document.getElementById('themeToggleBtn');
+    if (themeToggleBtn) {
+        themeToggleBtn.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            setTheme(newTheme);
+            localStorage.setItem('theme', newTheme);
+        });
+    }
+}
+
+/**
+ * Aplica o tema na página e atualiza o ícone do botão.
+ * @param {string} theme - 'light' ou 'dark'
+ */
+function setTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    const themeIcon = document.getElementById('themeIcon');
+    if (themeIcon) {
+        if (theme === 'dark') {
+            themeIcon.className = 'fas fa-sun';
+        } else {
+            themeIcon.className = 'fas fa-moon';
+        }
+    }
+}
+
+// Executa após o carregamento do DOM
+document.addEventListener('DOMContentLoaded', () => {
+    initTheme();
+});
+
+/**
  * Inicializa o comportamento de Drag and Drop e Clique em uma área de upload.
  * @param {string} dropZoneId - ID do elemento container (zona de drop)
  * @param {string} inputId - ID do elemento <input type="file">

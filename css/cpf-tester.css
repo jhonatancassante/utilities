@@ -11,7 +11,9 @@
 	text-align: center;
 	letter-spacing: 1px;
 	padding: 12px;
-	border: 2px solid #ddd;
+	border: 2px solid var(--border-color);
+	background-color: var(--input-bg);
+	color: var(--input-text);
 	border-radius: 8px;
 	outline: none;
 	transition: border-color 0.3s ease;
@@ -19,12 +21,12 @@
 
 .cpf-input-container input.valid {
 	border-color: #2ecc71;
-	background-color: #f0fff4;
+	background-color: rgba(46, 204, 113, 0.1);
 }
 
 .cpf-input-container input.invalid {
 	border-color: #e74c3c;
-	background-color: #fdf0ed;
+	background-color: rgba(231, 76, 60, 0.1);
 }
 
 .status-badge {
@@ -41,21 +43,21 @@
 	color: #e74c3c;
 }
 
-/* NOVO: Estilos do Bloco de Dígito Verificador Correto */
+/* Bloco de Dígito Verificador Correto */
 .dv-box {
-	background-color: #e8f4fd;
+	background-color: var(--info-bg);
 	border: 1px solid #3498db;
 	border-radius: 8px;
 	padding: 15px;
 	margin-top: 25px;
 	text-align: center;
-	color: #2c3e50;
+	color: var(--text-primary);
 }
 
 .dv-box h3 {
 	margin: 0 0 10px 0;
 	font-size: 1.1rem;
-	color: #2980b9;
+	color: #3498db;
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -71,7 +73,7 @@
 	font-family: monospace;
 	font-size: 1.3rem;
 	font-weight: bold;
-	background: #fff;
+	background: var(--bg-card);
 	color: #2ecc71;
 	padding: 8px 15px;
 	border-radius: 6px;
@@ -98,19 +100,20 @@
 	margin: 0;
 	max-height: 250px;
 	overflow-y: auto;
-	border: 1px solid #e0e0e0;
+	border: 1px solid var(--border-color);
 	border-radius: 8px;
-	background: #fff;
+	background: var(--bg-card);
 }
 
 .results-list li {
 	padding: 10px 15px;
-	border-bottom: 1px solid #f0f0f0;
+	border-bottom: 1px solid var(--border-color);
 	font-family: monospace;
 	font-size: 1.05rem;
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
+	color: var(--text-primary);
 }
 
 .results-list li:last-child {
@@ -121,12 +124,12 @@
 	font-size: 0.75rem;
 	padding: 3px 8px;
 	border-radius: 12px;
-	background-color: #e8f4fd;
+	background-color: var(--info-bg);
 	color: #3498db;
 }
 
 .results-list li.original-cpf {
-	background-color: #eef9f1;
+	background-color: rgba(46, 204, 113, 0.15);
 }
 
 .results-list li.original-cpf .badge {
