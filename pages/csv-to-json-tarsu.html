@@ -41,16 +41,11 @@
 					<code>ccm</code>, <code>quantidade</code> e <code>valor</code>.
 				</div>
 
-				<div
-					class="upload-section"
-					id="drop-zone"
-					tabindex="0"
-					onclick="document.getElementById('csvFile').click()"
-				>
+				<div class="upload-section" id="drop-zone" tabindex="0">
 					<span id="file-label"
 						>Clique ou arraste o arquivo TARSU CSV aqui</span
 					>
-					<input type="file" id="csvFile" accept=".csv" style="display: none" />
+					<input type="file" id="csvFile" accept=".csv" />
 				</div>
 
 				<div id="errorMessage" class="error"></div>
@@ -68,7 +63,14 @@
 					<pre><code id="jsonOutput">O resultado filtrado aparecerá aqui após o envio do arquivo...</code></pre>
 				</div>
 
-				<button id="downloadBtn" class="btn">Baixar JSON</button>
+				<div id="btnGroup" class="btn-group" style="display: none">
+					<button id="downloadBtn">
+						<i class="fas fa-download"></i> Baixar JSON
+					</button>
+					<button id="clearBtn" class="btn-danger" onclick="clearFiles()">
+						<i class="fas fa-trash-alt"></i> Limpar
+					</button>
+				</div>
 			</div>
 		</main>
 

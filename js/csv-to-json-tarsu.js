@@ -2,107 +2,118 @@
 
 const fileLabel = document.getElementById('file-label');
 const jsonOutput = document.getElementById('jsonOutput');
-const downloadBtn = document.getElementById('downloadBtn');
 const copyBtn = document.getElementById('copyBtn');
+const downloadBtn = document.getElementById('downloadBtn');
+const btnGroup = document.getElementById('btnGroup');
 const errorMessage = document.getElementById('errorMessage');
 
-let generatedJsonString = "";
+const DEFAULT_LABEL = 'Clique ou arraste o arquivo TARSU CSV aqui';
+const DEFAULT_PRE_TEXT = 'O resultado filtrado aparecerá aqui após o envio do arquivo...';
 
-// Inicializa a seção de upload usando a função compartilhada do global.js
+let generatedJsonString = '';
+
+// Inicializa a seção de upload usando a função compartilhada
 setupUploadSection('drop-zone', 'csvFile', function (files) {
-    const file = files[0]; // Como esse conversor processa um por um, pegamos o primeiro
+    const file = files[0];
     handleFile(file);
 });
 
 function handleFile(file) {
-    if (!file || !file.name.endsWith('.csv')) {
-        errorMessage.textContent = "Erro: Por favor, selecione apenas arquivos .csv";
+    if (!file || !file.name.toLowerCase().endsWith('.csv')) {
+        errorMessage.textContent = 'Erro: Por favor, selecione apenas arquivos .csv';
         return;
     }
 
     fileLabel.textContent = file.name;
-    errorMessage.textContent = "";
-    jsonOutput.textContent = "Processando arquivo...";
-    copyBtn.style.display = 'none'; // Oculta o botão se carregar um novo arquivo
+    errorMessage.textContent = '';
+    jsonOutput.textContent = 'Processando arquivo...';
+    copyBtn.style.display = 'none';
 
     const reader = new FileReader();
 
     reader.onload = function (evt) {
         const text = evt.target.result;
-
-        // Separa por linhas para encontrar onde começam os dados reais
         const lines = text.split(/\r?\n/);
 
-        // Procuramos a linha que contém o cabeçalho real dos dados
         let dataStartIndex = -1;
         for (let i = 0; i < lines.length; i++) {
-            if (lines[i].includes("CPF / CNPJ") && lines[i].includes("CCM")) {
+            if (lines[i].includes('CPF / CNPJ') && lines[i].includes('CCM')) {
                 dataStartIndex = i;
                 break;
             }
         }
 
         if (dataStartIndex === -1) {
-            errorMessage.textContent = "Erro: Não foi possível localizar a linha de cabeçalho dos dados (CPF / CNPJ;Nome;...) no CSV.";
-            jsonOutput.textContent = "Erro no mapeamento.";
+            errorMessage.textContent =
+                'Erro: Não foi possível localizar a linha de cabeçalho dos dados no CSV.';
+            jsonOutput.textContent = 'Erro no mapeamento.';
+            if (btnGroup) btnGroup.style.display = 'none';
             return;
         }
 
-        // Junta novamente apenas a partir da linha de cabeçalho correta
-        const csvDataOnly = lines.slice(dataStartIndex).join("\n");
+        const csvDataOnly = lines.slice(dataStartIndex).join('\n');
 
-        // Executa o PapaParse apenas no bloco de dados úteis
         Papa.parse(csvDataOnly, {
             header: true,
             skipEmptyLines: true,
-            delimiter: ";", // Força o delimitador correto identificado no seu arquivo
+            delimiter: ';',
             complete: function (results) {
                 try {
                     processData(results.data);
                 } catch (err) {
-                    errorMessage.textContent = "Erro ao filtrar os dados: " + err.message;
-                    jsonOutput.textContent = "Erro no processamento.";
-                    downloadBtn.style.display = 'none';
+                    errorMessage.textContent = 'Erro ao filtrar os dados: ' + err.message;
+                    jsonOutput.textContent = 'Erro no processamento.';
+                    if (btnGroup) btnGroup.style.display = 'none';
                     copyBtn.style.display = 'none';
                 }
             },
             error: function (err) {
-                errorMessage.textContent = "Erro na leitura do conteúdo: " + err.message;
+                errorMessage.textContent = 'Erro na leitura do conteúdo: ' + err.message;
             }
         });
     };
 
-    reader.readAsText(file, 'ISO-8859-1'); // Codificação comum para planilhas geradas em português (trata acentos)
+    reader.readAsText(file, 'ISO-8859-1');
 }
 
 function processData(rawData) {
-    // Mapeia isolando estritamente os campos solicitados
     const mappedData = rawData
-        .filter(item => item["CCM"]) // Garante que ignora linhas de totalizadores ou vazias no fim do bloco
-        .map(item => {
+        .filter((item) => item['CCM'])
+        .map((item) => {
             return {
-                ccm: item["CCM"] ? item["CCM"].trim() : "",
-                quantidade: item["Quant (Kg)"] ? item["Quant (Kg)"].trim() : "",
-                valor: item["Valor (R$)"] ? item["Valor (R$)"].trim() : ""
+                ccm: item['CCM'] ? item['CCM'].trim() : '',
+                quantidade: item['Quant (Kg)'] ? item['Quant (Kg)'].trim() : '',
+                valor: item['Valor (R$)'] ? item['Valor (R$)'].trim() : ''
             };
         });
 
-    // Converte em String JSON estruturada
     generatedJsonString = JSON.stringify(mappedData, null, 4);
-
-    // Exibe na tela do usuário
     jsonOutput.textContent = generatedJsonString;
 
-    // Ativa botões de download e cópia
-    downloadBtn.style.display = 'inline-block';
+    // Exibe botões de ação
+    if (btnGroup) btnGroup.style.display = 'flex';
     copyBtn.style.display = 'inline-flex';
 }
 
-// Baixar o arquivo .json gerado automaticamente
+function clearFiles() {
+    generatedJsonString = '';
+    fileLabel.textContent = DEFAULT_LABEL;
+    jsonOutput.textContent = DEFAULT_PRE_TEXT;
+    errorMessage.textContent = '';
+    copyBtn.style.display = 'none';
+    if (btnGroup) btnGroup.style.display = 'none';
+
+    const csvInput = document.getElementById('csvFile');
+    if (csvInput) csvInput.value = '';
+}
+
+// Baixar o arquivo .json
 downloadBtn.addEventListener('click', function () {
     if (!generatedJsonString) return;
 
-    const blob = new Blob([generatedJsonString], { type: "application/json;charset=utf-8;" });
+    const blob = new Blob([generatedJsonString], {
+        type: 'application/json;charset=utf-8;'
+    });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -113,21 +124,22 @@ downloadBtn.addEventListener('click', function () {
     URL.revokeObjectURL(url);
 });
 
-// Ação de copiar conteúdo para a Área de Transferência (Clipboard)
+// Ação de copiar conteúdo
 copyBtn.addEventListener('click', function () {
     if (!generatedJsonString) return;
 
-    navigator.clipboard.writeText(generatedJsonString).then(function () {
-        // Feedback visual de sucesso
-        copyBtn.classList.add('copied');
-        copyBtn.innerHTML = '<i class="fas fa-check"></i> Copiado!';
+    navigator.clipboard
+        .writeText(generatedJsonString)
+        .then(function () {
+            copyBtn.classList.add('copied');
+            copyBtn.innerHTML = '<i class="fas fa-check"></i> Copiado!';
 
-        // Restaura o botão original após 2 segundos
-        setTimeout(function () {
-            copyBtn.classList.remove('copied');
-            copyBtn.innerHTML = '<i class="fa-regular fa-copy"></i>';
-        }, 2000);
-    }).catch(function (err) {
-        alert('Não foi possível copiar o texto automaticamente: ', err);
-    });
+            setTimeout(function () {
+                copyBtn.classList.remove('copied');
+                copyBtn.innerHTML = '<i class="fa-regular fa-copy"></i>';
+            }, 2000);
+        })
+        .catch(function (err) {
+            alert('Não foi possível copiar o texto automaticamente: ', err);
+        });
 });

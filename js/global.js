@@ -1,5 +1,3 @@
-// js/global.js
-
 /**
  * Inicializa o comportamento de Drag and Drop e Clique em uma área de upload.
  * @param {string} dropZoneId - ID do elemento container (zona de drop)
@@ -16,21 +14,33 @@ function setupUploadSection(dropZoneId, inputId, onFilesSelected) {
     dropZone.addEventListener('click', () => fileInput.click());
 
     // Previne comportamentos padrão do navegador
-    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-        dropZone.addEventListener(eventName, e => {
-            e.preventDefault();
-            e.stopPropagation();
-        }, false);
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach((eventName) => {
+        dropZone.addEventListener(
+            eventName,
+            (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+            },
+            false
+        );
     });
 
     // Feedback visual ao arrastar o arquivo por cima
-    ['dragenter', 'dragover'].forEach(eventName => {
-        dropZone.addEventListener(eventName, () => dropZone.classList.add('dragover'), false);
+    ['dragenter', 'dragover'].forEach((eventName) => {
+        dropZone.addEventListener(
+            eventName,
+            () => dropZone.classList.add('dragover'),
+            false
+        );
     });
 
     // Remove feedback visual ao sair da área ou soltar
-    ['dragleave', 'drop'].forEach(eventName => {
-        dropZone.addEventListener(eventName, () => dropZone.classList.remove('dragover'), false);
+    ['dragleave', 'drop'].forEach((eventName) => {
+        dropZone.addEventListener(
+            eventName,
+            () => dropZone.classList.remove('dragover'),
+            false
+        );
     });
 
     // Captura os arquivos no evento de soltar (Drop)
@@ -48,4 +58,20 @@ function setupUploadSection(dropZoneId, inputId, onFilesSelected) {
             onFilesSelected(files);
         }
     });
+}
+
+/**
+ * Gera uma string formatada no padrão AAAAMMDDHHmmSS para arquivos baixados.
+ * @returns {string} Timestamp formatado ex: 20260730143000
+ */
+function getFormattedTimestamp() {
+    const now = new Date();
+    return (
+        now.getFullYear().toString() +
+        (now.getMonth() + 1).toString().padStart(2, '0') +
+        now.getDate().toString().padStart(2, '0') +
+        now.getHours().toString().padStart(2, '0') +
+        now.getMinutes().toString().padStart(2, '0') +
+        now.getSeconds().toString().padStart(2, '0')
+    );
 }

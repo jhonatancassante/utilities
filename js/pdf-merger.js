@@ -1,50 +1,85 @@
-// js/pdf-merger.js
-
 const fileLabel = document.getElementById('file-label');
 const status = document.getElementById('status');
-let selectedFiles = []; // Mantém o histórico acumulado dos PDFs selecionados
+const btnGroup = document.getElementById('btnGroup');
+let selectedFiles = [];
+
+const DEFAULT_LABEL = 'Clique ou arraste seus arquivos PDF aqui (múltiplos arquivos)';
 
 // Inicializa a área de drag & drop reutilizando o global.js
 setupUploadSection('drop-zone', 'pdfInput', function (files) {
-    const validFiles = Array.from(files).filter(file => file.name.toLowerCase().endsWith('.pdf'));
+    const validFiles = Array.from(files).filter((file) =>
+        file.name.toLowerCase().endsWith('.pdf')
+    );
 
     if (validFiles.length === 0) {
-        status.textContent = "Erro: Por favor, selecione apenas arquivos .pdf";
-        status.style.color = "#e74c3c";
+        status.textContent = 'Erro: Por favor, selecione apenas arquivos .pdf';
+        status.style.color = '#e74c3c';
         return;
     }
 
-    // Acumula os novos arquivos sem duplicar os existentes (baseado no nome do arquivo)
-    validFiles.forEach(newFile => {
-        const isDuplicate = selectedFiles.some(existingFile => existingFile.name === newFile.name);
+    // Acumula os novos arquivos sem duplicar
+    validFiles.forEach((newFile) => {
+        const isDuplicate = selectedFiles.some(
+            (existingFile) => existingFile.name === newFile.name
+        );
         if (!isDuplicate) {
             selectedFiles.push(newFile);
         }
     });
 
-    status.textContent = "";
-
-    if (selectedFiles.length === 1) {
-        fileLabel.textContent = selectedFiles[0].name;
-    } else {
-        fileLabel.textContent = `${selectedFiles.length} arquivos PDF selecionados`;
-    }
+    status.textContent = '';
+    updateUI();
 });
 
-async function mergePDFs() {
+// Atualiza a interface (oculta botões se houver menos de 2 arquivos)
+function updateUI() {
     if (selectedFiles.length === 0) {
-        status.textContent = "Selecione pelo menos um arquivo PDF!";
-        status.style.color = "#e74c3c";
+        fileLabel.textContent = DEFAULT_LABEL;
+        if (btnGroup) btnGroup.style.display = 'none';
+    } else {
+        // O grupo de botões só fica visível se houver pelo menos 2 PDFs
+        if (selectedFiles.length >= 2) {
+            if (btnGroup) btnGroup.style.display = 'flex';
+            status.textContent = '';
+        } else {
+            if (btnGroup) btnGroup.style.display = 'none';
+            status.textContent = 'Aviso: Selecione pelo menos 2 arquivos PDF para unificar.';
+            status.style.color = '#e67e22'; // Laranja de aviso
+        }
+
+        if (selectedFiles.length === 1) {
+            fileLabel.textContent = selectedFiles[0].name;
+        } else {
+            fileLabel.textContent = `${selectedFiles.length} arquivos PDF selecionados`;
+        }
+    }
+}
+
+function clearFiles() {
+    selectedFiles = [];
+    const pdfInput = document.getElementById('pdfInput');
+    if (pdfInput) pdfInput.value = '';
+    status.textContent = '';
+    updateUI();
+}
+
+async function mergePDFs() {
+    if (selectedFiles.length < 2) {
+        status.textContent = 'Selecione pelo menos dois arquivos PDF!';
+        status.style.color = '#e74c3c';
         return;
     }
 
-    status.textContent = "Processando e unificando PDFs...";
-    status.style.color = "#2c3e50";
+    status.textContent = 'Processando e unificando PDFs...';
+    status.style.color = '#2c3e50';
 
     try {
-        // 1. Ordenação alfabética natural (ex: A, B, C, D)
+        // 1. Ordenação alfabética natural
         const sortedFiles = [...selectedFiles].sort((a, b) =>
-            a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' })
+            a.name.localeCompare(b.name, undefined, {
+                numeric: true,
+                sensitivity: 'base'
+            })
         );
 
         // 2. Criação do PDF consolidado final
@@ -55,13 +90,12 @@ async function mergePDFs() {
             const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
             const pageCount = pdfDoc.getPageCount();
 
-            // Copia todas as páginas do arquivo atual
             const pageIndices = Array.from({ length: pageCount }, (_, i) => i);
             const copiedPages = await mergedPdf.copyPages(pdfDoc, pageIndices);
 
-            copiedPages.forEach(page => mergedPdf.addPage(page));
+            copiedPages.forEach((page) => mergedPdf.addPage(page));
 
-            // 3. Verificação de paridade: se for ímpar, insere uma página em branco
+            // Paridade: se ímpar, adiciona página em branco
             if (pageCount % 2 !== 0) {
                 const lastPage = copiedPages[copiedPages.length - 1];
                 const { width, height } = lastPage.getSize();
@@ -69,21 +103,11 @@ async function mergePDFs() {
             }
         }
 
-        // 4. Salva o documento consolidado
+        // 3. Salva e baixa usando a função global de data/hora
         const mergedPdfBytes = await mergedPdf.save();
         const blob = new Blob([mergedPdfBytes], { type: 'application/pdf' });
+        const fileName = `${getFormattedTimestamp()}.pdf`;
 
-        // 5. Formatação do nome com data e hora invertida: AAAAMMDDHHmm
-        const now = new Date();
-        const year = now.getFullYear().toString();
-        const month = (now.getMonth() + 1).toString().padStart(2, '0');
-        const day = now.getDate().toString().padStart(2, '0');
-        const hours = now.getHours().toString().padStart(2, '0');
-        const minutes = now.getMinutes().toString().padStart(2, '0');
-
-        const fileName = `${year}${month}${day}${hours}${minutes}.pdf`;
-
-        // 6. Download automático
         const downloadLink = document.createElement('a');
         downloadLink.href = URL.createObjectURL(blob);
         downloadLink.download = fileName;
@@ -91,9 +115,9 @@ async function mergePDFs() {
         URL.revokeObjectURL(downloadLink.href);
 
         status.textContent = `PDF unificado gerado com sucesso: ${fileName}`;
-        status.style.color = "#2ecc71";
+        status.style.color = '#2ecc71';
     } catch (error) {
-        status.textContent = "Erro ao unificar arquivos: " + error.message;
-        status.style.color = "#e74c3c";
+        status.textContent = 'Erro ao unificar arquivos: ' + error.message;
+        status.style.color = '#e74c3c';
     }
 }

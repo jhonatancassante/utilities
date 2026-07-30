@@ -1,6 +1,4 @@
-.btn {
-	display: none;
-}
+/* css/csv-to-json-tarsu.css */
 
 .json-container {
 	position: relative;
@@ -9,6 +7,7 @@
 	min-width: 0;
 	box-sizing: border-box;
 }
+
 pre {
 	background: #272822;
 	color: #f8f8f2;
@@ -23,11 +22,6 @@ pre {
 	box-sizing: border-box;
 	white-space: pre-wrap;
 	word-break: break-all;
-}
-.error {
-	color: #e74c3c;
-	font-weight: bold;
-	margin-top: 10px;
 }
 
 .copy-btn {
@@ -48,10 +42,12 @@ pre {
 	gap: 6px;
 	z-index: 10;
 }
+
 .copy-btn i {
 	font-size: 14px;
 	margin: 0;
 }
+
 .copy-btn:hover {
 	background: #3498db;
 	color: white;
@@ -59,6 +55,7 @@ pre {
 	transform: none;
 	opacity: 1;
 }
+
 .copy-btn.copied {
 	background: #2ecc71;
 	border-color: #2ecc71;

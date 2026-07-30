@@ -13,14 +13,18 @@ body {
 	align-items: center;
 	flex-direction: column;
 	box-sizing: border-box;
+	min-height: 100vh;
 }
+
 h1 {
 	color: #2c3e50;
 	margin-bottom: 30px;
 }
+
 .input-group {
 	margin: 20px 0;
 }
+
 input {
 	padding: 12px;
 	width: 80%;
@@ -30,7 +34,7 @@ input {
 	margin-bottom: 10px;
 }
 
-/* Botões Globais */
+/* Botões Globais de Formulário/Ação */
 button {
 	background-color: #3498db;
 	color: white;
@@ -42,31 +46,27 @@ button {
 	margin: 10px 5px;
 	transition: all 0.3s;
 }
+
 button:hover {
 	opacity: 0.9;
 	transform: translateY(-2px);
 }
 
-/* Estilo para Botões de Ação Secundária/Aviso/Perigo (Limpar, Excluir, Resetar) */
 button.btn-danger {
 	background-color: #e74c3c;
 }
+
 button.btn-danger:hover {
 	background-color: #c0392b;
 }
 
-/* Agrupador de Botões */
 .btn-group {
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	gap: 10px;
 	flex-wrap: wrap;
-	margin-top: 10px;
-}
-
-#download-btn {
-	display: none;
+	margin-top: 15px;
 }
 
 header {
@@ -114,10 +114,9 @@ main {
 	min-height: calc(100vh - 160px);
 	width: 100%;
 	max-width: 600px;
-	grid-template-columns: 1fr;
-	display: grid;
-	justify-items: center;
-	align-items: start;
+	display: flex;
+	justify-content: center;
+	align-items: flex-start;
 	padding: 20px 0;
 }
 
@@ -127,40 +126,56 @@ main {
 	padding: 20px;
 }
 
-.grid-container {
-	display: grid;
-	gap: 15px;
-	grid-template-columns: repeat(1, 1fr);
-	width: 90%;
-	align-content: start;
-	padding: 20px 0;
+/* Mensagens e Status Globais */
+.status-msg,
+#status {
+	margin-top: 15px;
+	font-weight: bold;
+	color: #2c3e50;
+	word-break: break-word;
 }
 
-.grid-btn {
-	background-color: #3498db;
-	color: white;
-	padding: 25px 15px;
-	margin: 0 15px;
-	border-radius: 8px;
-	text-decoration: none;
-	transition: all 0.3s;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
+.error {
+	color: #e74c3c;
+	font-weight: bold;
+	margin-top: 10px;
 }
 
-.grid-btn:hover {
-	opacity: 0.9;
-	transform: translateY(-2px);
+.info-box {
+	background-color: #e8f4fd;
+	border-left: 4px solid #3498db;
+	padding: 10px 15px;
+	margin-bottom: 20px;
+	font-size: 14px;
+	color: #2c3e50;
+	text-align: left;
 }
 
-.grid-btn i {
-	font-size: 2em;
-	margin-bottom: 10px;
+/* Upload Dropzone */
+.upload-section {
+	border: 2px dashed #ccc;
+	padding: 30px;
+	text-align: center;
+	border-radius: 6px;
+	cursor: pointer;
+	margin-bottom: 20px;
+	transition:
+		background-color 0.3s,
+		border-color 0.3s,
+		color 0.3s;
+	width: 100%;
+	box-sizing: border-box;
 }
 
-.grid-btn span {
-	font-size: 0.9em;
+.upload-section.dragover,
+.upload-section:hover {
+	background-color: #e3f2fd;
+	border-color: #2196f3;
+	color: #1e88e5;
+}
+
+.upload-section input[type='file'] {
+	display: none;
 }
 
 footer {
@@ -172,6 +187,7 @@ footer {
 	flex-direction: column;
 	align-items: center;
 	gap: 12px;
+	margin-top: auto;
 }
 
 .social-links {
@@ -211,50 +227,9 @@ footer {
 	text-decoration: underline;
 }
 
-.info-box {
-	background-color: #e8f4fd;
-	border-left: 4px solid #3498db;
-	padding: 10px 15px;
-	margin-bottom: 20px;
-	font-size: 14px;
-	color: #2c3e50;
-}
-
-.upload-section {
-	border: 2px dashed #ccc;
-	padding: 30px;
-	text-align: center;
-	border-radius: 6px;
-	cursor: pointer;
-	margin-bottom: 20px;
-	transition:
-		background-color 0.3s,
-		border-color 0.3s,
-		color 0.3s;
-	width: 100%;
-	box-sizing: border-box;
-}
-
-.upload-section.dragover,
-.upload-section:hover {
-	background-color: #e3f2fd;
-	border-color: #2196f3;
-	color: #1e88e5;
-}
-
-.upload-section input[type='file'] {
-	display: none;
-}
-
 @media (min-width: 600px) {
 	main {
 		max-width: 85%;
-	}
-	.grid-container {
-		grid-template-columns: repeat(2, 1fr);
-	}
-	.grid-btn {
-		margin: 0;
 	}
 }
 
@@ -262,8 +237,5 @@ footer {
 	main {
 		width: 100%;
 		max-width: 850px;
-	}
-	.grid-container {
-		grid-template-columns: repeat(4, 1fr);
 	}
 }

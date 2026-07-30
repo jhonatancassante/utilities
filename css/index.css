@@ -1,0 +1,53 @@
+/* css/index.css */
+
+.grid-container {
+	display: grid;
+	gap: 15px;
+	grid-template-columns: repeat(1, 1fr);
+	width: 90%;
+	align-content: start;
+	padding: 20px 0;
+}
+
+.grid-btn {
+	background-color: #3498db;
+	color: white;
+	padding: 25px 15px;
+	margin: 0 15px;
+	border-radius: 8px;
+	text-decoration: none;
+	transition: all 0.3s;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.grid-btn:hover {
+	opacity: 0.9;
+	transform: translateY(-2px);
+}
+
+.grid-btn i {
+	font-size: 2em;
+	margin-bottom: 10px;
+}
+
+.grid-btn span {
+	font-size: 0.9em;
+}
+
+/* Responsividade exclusiva da grade da Home */
+@media (min-width: 600px) {
+	.grid-container {
+		grid-template-columns: repeat(2, 1fr);
+	}
+	.grid-btn {
+		margin: 0;
+	}
+}
+
+@media (min-width: 900px) {
+	.grid-container {
+		grid-template-columns: repeat(4, 1fr);
+	}
+}
