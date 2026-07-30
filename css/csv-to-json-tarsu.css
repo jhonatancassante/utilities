@@ -1,108 +1,67 @@
-/* ===== CSV → JSON / TARSU ===== */
-.upload-section {
-	border: 2px dashed var(--border);
-	border-radius: var(--radius);
-	padding: 2.5rem 1.5rem;
-	text-align: center;
-	cursor: pointer;
-	transition:
-		background-color var(--transition),
-		border-color var(--transition),
-		color var(--transition);
-	background-color: var(--bg-card);
-	color: var(--text-secondary);
-	width: 100%;
-	box-sizing: border-box;
-	margin-bottom: 1.5rem;
-}
-.upload-section:hover,
-.upload-section.dragover {
-	background-color: var(--primary-light);
-	border-color: var(--primary);
-	color: var(--primary);
-}
-.upload-section input[type='file'] {
-	display: none;
-}
-.upload-section i {
-	font-size: 2.5rem;
-	display: block;
-	margin-bottom: 0.5rem;
-	color: var(--primary);
-}
+/* css/csv-to-json-tarsu.css */
 
 .json-container {
 	position: relative;
-	margin-top: 1.5rem;
+	margin-top: 20px;
 	width: 100%;
+	min-width: 0;
 	box-sizing: border-box;
 }
 
-.json-container pre {
-	background: #1e293b;
-	color: #e2e8f0;
-	padding: 1.5rem;
+pre {
+	background: #1c2333;
+	color: #e8edf7;
+	padding: 25px;
 	border-radius: var(--radius-sm);
 	overflow-x: auto;
-	max-height: 280px;
-	font-size: 0.85rem;
+	max-height: 250px;
+	font-family: var(--font-mono);
+	font-size: 13px;
 	text-align: left;
-	margin-top: 0.5rem;
+	margin-top: 10px;
 	max-width: 100%;
 	box-sizing: border-box;
 	white-space: pre-wrap;
-	word-break: break-word;
-	border: 1px solid var(--border);
+	word-break: break-all;
+	border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .copy-btn {
 	position: absolute;
-	right: 0.75rem;
-	top: 0.75rem;
-	background: rgba(255, 255, 255, 0.1);
-	color: #e2e8f0;
+	right: 15px;
+	top: 60px;
+	background: rgba(255, 255, 255, 0.12);
+	color: #e8edf7;
 	border: 1px solid rgba(255, 255, 255, 0.2);
-	padding: 0.4rem 0.6rem;
-	font-size: 0.8rem;
+	padding: 6px 10px;
+	font-size: 12px;
 	border-radius: var(--radius-sm);
 	cursor: pointer;
-	transition: all var(--transition);
+	transition: all 0.2s ease;
+	margin: 0;
 	display: inline-flex;
 	align-items: center;
-	gap: 0.3rem;
+	gap: 6px;
 	z-index: 10;
-}
-.copy-btn i {
-	font-size: 1rem;
-}
-.copy-btn:hover {
-	background: var(--primary);
-	color: #fff;
-	border-color: var(--primary);
-}
-.copy-btn.copied {
-	background: #22c55e;
-	border-color: #22c55e;
-	color: #fff;
+	min-height: auto;
 }
 
-/* ===== RESPONSIVO ===== */
-@media (max-width: 480px) {
-	.upload-section {
-		padding: 1.5rem 1rem;
-	}
-	.upload-section i {
-		font-size: 2rem;
-	}
-	.json-container pre {
-		font-size: 0.75rem;
-		padding: 1rem;
-		max-height: 200px;
-	}
-	.copy-btn {
-		top: 0.5rem;
-		right: 0.5rem;
-		padding: 0.3rem 0.5rem;
-		font-size: 0.7rem;
-	}
+.copy-btn i {
+	font-size: 14px;
+	margin: 0;
+}
+
+.copy-btn:hover {
+	background: var(--accent);
+	color: white;
+	border-color: var(--accent);
+	transform: none;
+	opacity: 1;
+}
+
+.copy-btn.copied {
+	background: var(--success);
+	border-color: var(--success);
+	color: white;
+	padding: 6px 12px;
 }

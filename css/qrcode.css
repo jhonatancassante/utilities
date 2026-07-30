@@ -1,29 +1,29 @@
-/* ===== QR CODE ===== */
+/* css/qrcode.css */
+
 .qr-container {
 	position: relative;
-	margin: 2rem auto;
-	width: 100%;
-	max-width: 380px;
+	margin: 30px auto;
+	width: 360px;
+	max-width: 100%;
 	display: none;
 	background-color: transparent;
-	padding: 0;
+	padding: 20px;
+	border-radius: var(--radius-lg);
 	box-sizing: border-box;
 }
 
 .qr-border {
-	border: 2px solid var(--border);
-	border-radius: var(--radius);
-	padding: 1.25rem;
-	background-color: var(--bg-card);
-	box-shadow: var(--shadow-md);
+	/* Fundo sempre branco: mantém o contraste necessário para a leitura do QR Code em qualquer tema */
+	border: 12px solid var(--accent);
+	border-radius: var(--radius-md);
+	padding: 15px;
+	background-color: #ffffff;
 	overflow: hidden;
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	box-sizing: border-box;
-	transition:
-		border-color var(--transition),
-		background-color var(--transition);
+	box-shadow: var(--shadow-md);
 }
 
 #qrcode {
@@ -32,6 +32,7 @@
 	align-items: center;
 	width: 100%;
 }
+
 #qrcode img,
 #qrcode canvas {
 	display: block;
@@ -41,36 +42,33 @@
 }
 
 .qr-footer {
-	padding: 0.75rem;
+	padding: 12px;
 	border-radius: 50px;
-	margin-top: 1.25rem;
+	margin-top: 15px;
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	font-family: var(--font-display);
 	font-weight: 700;
-	font-size: 1.25rem;
+	font-size: clamp(1.1rem, 4vw, 1.9rem);
 	text-transform: uppercase;
-	color: var(--text);
-	gap: 0.75rem;
-}
-.qr-footer i {
-	font-size: 1.75rem;
-	color: var(--primary);
+	box-sizing: border-box;
+	color: var(--text-primary);
+	background-color: var(--accent-soft);
 }
 
-/* ===== RESPONSIVO ===== */
-@media (max-width: 480px) {
+.qr-footer i {
+	margin-right: 15px;
+	font-size: 1em;
+	color: var(--accent);
+}
+
+@media (max-width: 400px) {
 	.qr-container {
-		max-width: 100%;
-		padding: 0 0.5rem;
+		padding: 10px;
 	}
 	.qr-border {
-		padding: 0.75rem;
-	}
-	.qr-footer {
-		font-size: 1rem;
-	}
-	.qr-footer i {
-		font-size: 1.5rem;
+		border-width: 8px;
+		padding: 10px;
 	}
 }

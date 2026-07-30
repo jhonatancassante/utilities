@@ -1,57 +1,41 @@
-/* ===== COLOR CONTROLS ===== */
+/* css/color-controls.css */
+
 .color-controls {
 	display: flex;
 	flex-direction: column;
-	align-items: center;
-	gap: 0.75rem;
 	width: 100%;
-	margin: 1.5rem 0;
+	align-items: center;
+	gap: 8px;
+	margin: 20px 0;
 }
 
 .color-option {
 	display: flex;
 	width: 100%;
-	max-width: 300px;
+	max-width: 250px;
 	align-items: center;
 	justify-content: center;
-	gap: 0.5rem;
-	flex-wrap: wrap;
 }
 
 .color-option label {
+	margin-right: 8px;
 	font-weight: 600;
-	min-width: 100px;
+	color: var(--text-primary);
+	min-width: 120px;
 	text-align: right;
-	color: var(--text-secondary);
 }
 
-.color-option input[type='color'] {
+.color-option input {
 	width: 50px;
-	height: 40px;
-	padding: 0;
-	border: 1px solid var(--border);
-	border-radius: var(--radius-sm);
-	cursor: pointer;
-	background: none;
+	padding: 6px;
+	margin-bottom: 0;
 }
 
 .color-preview {
-	width: 24px;
-	height: 24px;
-	border: 1px solid var(--border);
+	width: 22px;
+	height: 22px;
+	border: 1px solid var(--border-color);
 	border-radius: var(--radius-sm);
 	display: inline-block;
-	flex-shrink: 0;
-}
-
-/* ===== RESPONSIVO ===== */
-@media (max-width: 480px) {
-	.color-option {
-		max-width: 100%;
-	}
-	.color-option label {
-		min-width: 80px;
-		font-size: 0.9rem;
-		text-align: left;
-	}
+	margin-left: 8px;
 }

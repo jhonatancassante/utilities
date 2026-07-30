@@ -1,34 +1,27 @@
-/* ===== PDF SPLITER ===== */
+/* css/pdf-spliter.css */
+
 #pageCount,
 #pageInit {
-	width: 100%;
-	max-width: 200px;
-	margin: 0.75rem auto;
-	padding: 0.6rem 0.75rem;
-	border: 1.5px solid var(--border);
-	border-radius: var(--radius-sm);
-	background-color: var(--bg-input);
-	color: var(--text);
+	width: 120px;
+	margin: 15px 8px;
+	padding: 10px;
+	font-family: var(--font-mono);
 	text-align: center;
-	font-size: 1rem;
-}
-
-#pageCount:focus,
-#pageInit:focus {
-	border-color: var(--border-focus);
-	box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+	border: 1px solid var(--border-color);
+	background-color: var(--input-bg);
+	color: var(--input-text);
+	border-radius: var(--radius-md);
 }
 
 #status {
-	margin-top: 1rem;
-	font-weight: 500;
-	color: var(--text-secondary);
+	margin-top: 20px;
+	color: var(--text-primary);
 }
 
-/* ===== RESPONSIVO ===== */
-@media (max-width: 480px) {
+@media (max-width: 380px) {
 	#pageCount,
 	#pageInit {
-		max-width: 150px;
+		width: 45%;
+		margin: 15px 4px;
 	}
 }

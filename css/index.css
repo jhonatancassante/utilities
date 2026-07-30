@@ -1,90 +1,112 @@
-/* ===== HOME GRID ===== */
+/* css/index.css */
+
 .grid-container {
 	display: grid;
-	gap: 1.5rem;
-	grid-template-columns: 1fr;
-	width: 100%;
-	max-width: 1200px;
-	margin: 0 auto;
-	padding: 0.5rem 0;
+	gap: 16px;
+	grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+	width: 92%;
+	max-width: 900px;
+	align-content: start;
+	padding: 20px 0;
 }
 
 .grid-btn {
+	position: relative;
 	background-color: var(--bg-card);
-	border: 1px solid var(--border);
-	border-radius: var(--radius);
-	padding: 2rem 1rem;
+	color: var(--text-primary);
+	padding: 28px 16px 22px;
+	border-radius: var(--radius-lg);
 	text-decoration: none;
-	color: var(--text);
+	transition:
+		transform var(--transition-fast),
+		box-shadow var(--transition-fast),
+		border-color var(--transition-fast);
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
-	gap: 0.75rem;
-	transition:
-		transform var(--transition),
-		box-shadow var(--transition),
-		border-color var(--transition),
-		background-color var(--transition);
+	gap: 12px;
+	min-height: 150px;
+	border: 1px solid var(--border-color);
 	box-shadow: var(--shadow-sm);
-	text-align: center;
 }
 
-.grid-btn i {
-	font-size: 2.5rem;
-	color: var(--primary);
-	transition: transform var(--transition);
+/* Marcas de canto em "esquadro de prancheta" — o elemento de assinatura da página */
+.grid-btn::before,
+.grid-btn::after {
+	content: '';
+	position: absolute;
+	width: 14px;
+	height: 14px;
+	border: 2px solid var(--accent);
+	opacity: 0.45;
+	transition: opacity var(--transition-fast);
 }
 
-.grid-btn span {
-	font-size: 1rem;
-	font-weight: 500;
-	color: var(--text-secondary);
+.grid-btn::before {
+	top: 9px;
+	left: 9px;
+	border-right: none;
+	border-bottom: none;
+	border-radius: 3px 0 0 0;
+}
+
+.grid-btn::after {
+	bottom: 9px;
+	right: 9px;
+	border-left: none;
+	border-top: none;
+	border-radius: 0 0 3px 0;
 }
 
 .grid-btn:hover {
+	opacity: 1;
 	transform: translateY(-4px);
-	box-shadow: var(--shadow-lg);
-	border-color: var(--primary);
-	background-color: var(--primary-light);
-}
-.grid-btn:hover i {
-	transform: scale(1.05);
+	box-shadow: var(--shadow-md);
+	border-color: var(--accent);
 }
 
-/* ===== RESPONSIVO ===== */
-@media (min-width: 480px) {
+.grid-btn:hover::before,
+.grid-btn:hover::after {
+	opacity: 1;
+}
+
+.grid-btn i {
+	font-size: 1.6em;
+	width: 56px;
+	height: 56px;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: var(--accent-soft);
+	color: var(--accent);
+	transition:
+		background-color var(--transition-fast),
+		color var(--transition-fast);
+}
+
+.grid-btn:hover i {
+	background-color: var(--accent);
+	color: #ffffff;
+}
+
+.grid-btn span {
+	font-family: var(--font-display);
+	font-size: 0.92em;
+	font-weight: 600;
+	letter-spacing: 0.01em;
+}
+
+/* Responsividade exclusiva da grade da Home */
+@media (min-width: 600px) {
 	.grid-container {
 		grid-template-columns: repeat(2, 1fr);
 	}
 }
 
-@media (min-width: 768px) {
-	.grid-container {
-		grid-template-columns: repeat(3, 1fr);
-	}
-}
-
-@media (min-width: 1024px) {
+@media (min-width: 900px) {
 	.grid-container {
 		grid-template-columns: repeat(4, 1fr);
-	}
-	.grid-btn {
-		padding: 2.5rem 1rem;
-	}
-	.grid-btn i {
-		font-size: 3rem;
-	}
-}
-
-@media (max-width: 400px) {
-	.grid-btn {
-		padding: 1.5rem 0.75rem;
-	}
-	.grid-btn i {
-		font-size: 2rem;
-	}
-	.grid-btn span {
-		font-size: 0.9rem;
 	}
 }
