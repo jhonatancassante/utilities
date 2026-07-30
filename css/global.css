@@ -29,6 +29,8 @@ input {
 	font-size: 16px;
 	margin-bottom: 10px;
 }
+
+/* Botões Globais */
 button {
 	background-color: #3498db;
 	color: white;
@@ -44,6 +46,25 @@ button:hover {
 	opacity: 0.9;
 	transform: translateY(-2px);
 }
+
+/* Estilo para Botões de Ação Secundária/Aviso/Perigo (Limpar, Excluir, Resetar) */
+button.btn-danger {
+	background-color: #e74c3c;
+}
+button.btn-danger:hover {
+	background-color: #c0392b;
+}
+
+/* Agrupador de Botões */
+.btn-group {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 10px;
+	flex-wrap: wrap;
+	margin-top: 10px;
+}
+
 #download-btn {
 	display: none;
 }
@@ -143,19 +164,14 @@ main {
 }
 
 footer {
-	background-color: rgba(
-		52,
-		152,
-		219,
-		0.08
-	); /* Substituído por RGBA para melhor compatibilidade de opacidade */
-	padding: 30px 20px; /* Mais espaço para respirar */
+	background-color: rgba(52, 152, 219, 0.08);
+	padding: 30px 20px;
 	width: 100%;
 	text-align: center;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	gap: 12px; /* Garante um espaçamento consistente entre os blocos */
+	gap: 12px;
 }
 
 .social-links {
@@ -174,7 +190,7 @@ footer {
 
 .social-links a:hover {
 	color: #3498db;
-	transform: translateY(-2px); /* Efeito sutil ao passar o mouse */
+	transform: translateY(-2px);
 }
 
 .copyright {

@@ -65,9 +65,15 @@
 					/>
 				</div>
 
-				<button onclick="processPDFs()">
-					<i class="fas fa-download"></i> Baixar PDFs
-				</button>
+				<!-- O grupo de botões inicia oculto -->
+				<div id="btnGroup" class="btn-group" style="display: none">
+					<button onclick="processPDFs()">
+						<i class="fas fa-download"></i> Baixar PDFs
+					</button>
+					<button id="clearBtn" class="btn-danger" onclick="clearFiles()">
+						<i class="fas fa-trash-alt"></i> Limpar
+					</button>
+				</div>
 
 				<div id="status"></div>
 			</div>

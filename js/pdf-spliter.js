@@ -1,6 +1,11 @@
+// js/pdf-spliter.js
+
 const fileLabel = document.getElementById('file-label');
 const status = document.getElementById('status');
+const btnGroup = document.getElementById('btnGroup');
 let selectedFiles = []; // Armazena os arquivos acumulados
+
+const DEFAULT_LABEL = 'Clique ou arraste seus arquivos PDF aqui (permite múltiplos)';
 
 // Inicializa o utilitário global passando os IDs e o callback
 setupUploadSection('drop-zone', 'pdfInput', function (files) {
@@ -25,13 +30,33 @@ setupUploadSection('drop-zone', 'pdfInput', function (files) {
     });
 
     status.textContent = '';
-
-    if (selectedFiles.length === 1) {
-        fileLabel.textContent = selectedFiles[0].name;
-    } else {
-        fileLabel.textContent = `${selectedFiles.length} arquivos PDF selecionados`;
-    }
+    updateUI();
 });
+
+// Atualiza os elementos da interface conforme o estado de arquivos carregados
+function updateUI() {
+    if (selectedFiles.length === 0) {
+        fileLabel.textContent = DEFAULT_LABEL;
+        if (btnGroup) btnGroup.style.display = 'none'; // Oculta os botões de ação
+    } else {
+        if (btnGroup) btnGroup.style.display = 'flex'; // Exibe os botões lado a lado
+
+        if (selectedFiles.length === 1) {
+            fileLabel.textContent = selectedFiles[0].name;
+        } else {
+            fileLabel.textContent = `${selectedFiles.length} arquivos PDF selecionados`;
+        }
+    }
+}
+
+// Reseta todos os arquivos acumulados
+function clearFiles() {
+    selectedFiles = [];
+    const pdfInput = document.getElementById('pdfInput');
+    if (pdfInput) pdfInput.value = ''; // Limpa o input de arquivo
+    status.textContent = '';
+    updateUI();
+}
 
 async function processPDFs() {
     const pageInit = Number(document.getElementById('pageInit').value);
