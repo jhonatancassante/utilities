@@ -186,6 +186,38 @@ document.addEventListener('DOMContentLoaded', () => {
     function escapeHtml(str) {
         return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
     }
+
+    // =====================================================
+    // FUNÇÃO PARA PREENCHIMENTO AUTOMÁTICO (MODO TESTE)
+    // Descomente a linha abaixo para usar os dados de teste.
+    preencherDadosTeste();
+    // =====================================================
+
+    async function preencherDadosTeste() {
+        // Aguarda as UFs serem carregadas (enquanto houver só a opção "Selecione...")
+        while (ufSelect.options.length <= 1) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+        }
+
+        // Seleciona SP e dispara o evento para carregar as cidades
+        ufSelect.value = 'SP';
+        ufSelect.dispatchEvent(new Event('change'));
+
+        // Aguarda as cidades carregarem
+        while (cidadeSelect.options.length <= 1) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+        }
+
+        // Preenche todos os campos (a máscara do CEP já está formatada)
+        cepInput.value = '13386-082';
+        nomeInput.value = 'Jhonatan Cassante';
+        enderecoInput.value = 'Rua José Roberto Muniz';
+        numeroInput.value = '27';
+        complementoInput.value = 'Casa';
+        bairroInput.value = 'Jardim Santa Rita I';
+        cidadeSelect.value = 'Nova Odessa';
+        observacaoInput.value = 'Protocolo 1234/2026 XXXXXX XXXX XXXXXXXXX XXXXXXXX XXXXXXXX';
+    }
 });
 
 function generateARPDF(registros, logoBase64) {
@@ -228,21 +260,22 @@ function drawSingleAR(doc, x, y, w, h, data, logoBase64) {
     doc.line(x + leftColW, y, x + leftColW, y + h);
 
     // Linha Tracejada Visual na Faixa de Cola
-    doc.setLineDashPattern([1, 1], 0);
-    doc.line(x + leftColW, y, x + leftColW, y + h);
+    doc.setLineDashPattern([0.3, 0.5], 0);
+    doc.line(x + leftColW - 1, y, x + leftColW - 1, y + h);
     doc.setLineDashPattern([], 0); // Restaura linha contínua
 
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(6);
-    doc.text('(ÁREA DE COLA NO VERSO)', x + 5.5, y + (h / 2) + 18, { angle: 90 });
+    doc.text('(ÁREA DE COLA NO VERSO)', x + 5, y + (h / 2) + 18, { angle: 90 });
 
     // Coluna Direita (Postagem e Carimbo)
     const rightColX = x + 106;
-    doc.line(rightColX, y, rightColX, y + h);
+    doc.line(rightColX, y, rightColX, y + 52);
+    doc.line(rightColX, y + 59, rightColX, y + h);
 
     // --- CABEÇALHO ---
     const hHeader = 8;
-    doc.line(x + leftColW, y + hHeader, rightColX, y + hHeader);
+    doc.line(x + leftColW, y + hHeader, x + w, y + hHeader); // linha baixo cabeçalho
 
     if (logoBase64) {
         doc.addImage(logoBase64, 'PNG', x + 9.5, y + 1.2, 28, 5.5);
@@ -254,19 +287,19 @@ function drawSingleAR(doc, x, y, w, h, data, logoBase64) {
 
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(7.5);
-    doc.text('AVISO DE RECEBIMENTO', x + 40, y + 5);
+    doc.text('AVISO DE\nRECEBIMENTO', x + 50, y + 3);
 
     doc.setFontSize(15);
     doc.text('AR', x + 85, y + 6);
 
     // Coluna Direita: Data de Postagem
-    doc.setFontSize(5.5);
-    doc.text('DATA DE POSTAGEM', rightColX + 2, y + 3.5);
+    doc.setFontSize(6);
+    doc.text('DATA DE POSTAGEM', rightColX + 0.7, y + 2.5);
 
     // --- CORPO CENTRAL (DESTINATÁRIO E DEVOLUÇÃO) ---
     const hDestDev = 44;
     const yDestDevEnd = y + hHeader + hDestDev;
-    doc.line(x + leftColW, yDestDevEnd, rightColX, yDestDevEnd);
+    doc.line(x + leftColW, yDestDevEnd, x + w, yDestDevEnd); // Linha debaixo do corpo central
 
     // Destinatário
     doc.setFont('helvetica', 'bold');
@@ -274,74 +307,74 @@ function drawSingleAR(doc, x, y, w, h, data, logoBase64) {
     doc.text('DESTINATÁRIO', x + 10, y + 11.5);
 
     doc.setFont('helvetica', 'normal');
-    doc.setFontSize(7);
-    doc.text(data.nome.toUpperCase(), x + 10, y + 15);
-    doc.text(`${data.endereco.toUpperCase()}, ${data.numero}${data.complemento ? ' ' + data.complemento.toUpperCase() : ''}`, x + 10, y + 18.5);
-    doc.text(data.bairro.toUpperCase(), x + 10, y + 22);
-    doc.text(`${data.cep} - ${data.cidade.toUpperCase()} - ${data.uf.toUpperCase()}`, x + 10, y + 25.5);
+    doc.text(data.nome.toUpperCase(), x + 10, y + 14);
+    doc.text(`${data.endereco.toUpperCase()}, ${data.numero}${data.complemento ? ' ' + data.complemento.toUpperCase() : ''}`, x + 10, y + 16.5);
+    doc.text(data.bairro.toUpperCase(), x + 10, y + 19);
+    doc.text(`${data.cep} - ${data.cidade.toUpperCase()} - ${data.uf.toUpperCase()}`, x + 10, y + 21.5);
 
     // Barcode / Código de Registro Placeholder
-    doc.rect(x + 22, y + 28, 58, 5);
-    doc.setFontSize(5.5);
-    doc.text('(CÓDIGO DE BARRAS OU Nº DE REGISTRO DO OBJETO)', x + 23.5, y + 31.5);
+    doc.setLineDashPattern([0.3, 0.5], 0);
+    doc.rect(x + 28, y + 30, 52, 3.5);
+    doc.setLineDashPattern([], 0); // Restaura linha contínua
+    doc.setFontSize(5);
+    doc.text('(CÓDIGO DE BARRAS OU Nº DE REGISTRO DO OBJETO)', x + 30, y + 32.5);
 
     // Endereço para Devolução do AR
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(6);
-    doc.text('ENDEREÇO PARA DEVOLUÇÃO DO AR', x + 10, y + 36.5);
+    doc.text('ENDEREÇO PARA DEVOLUÇÃO DO AR', x + 10, y + 40);
 
     doc.setFont('helvetica', 'normal');
-    doc.setFontSize(6.5);
-    doc.text('Município de Nova Odessa - Setor de Tributação e Dívida Ativa', x + 10, y + 40);
-    doc.text('Avenida João Pessoa, 777 - Centro', x + 10, y + 43.5);
-    doc.text('13380-017 - Nova Odessa - SP', x + 10, y + 47);
+    doc.text('Município de Nova Odessa - Setor de Tributação e Dívida Ativa'.toUpperCase(), x + 10, y + 42.5);
+    doc.text('Avenida João Pessoa, 777'.toUpperCase(), x + 10, y + 45);
+    doc.text('Centro'.toUpperCase(), x + 10, y + 47.5);
+    doc.text('13380-017 - Nova Odessa - SP'.toUpperCase(), x + 10, y + 50);
 
     // Divisões da Coluna Direita (Unidade de Postagem & Carimbo)
-    const yUnidPostagem = y + 16;
-    doc.line(rightColX, yUnidPostagem, x + w, yUnidPostagem);
+    const yUnidPostagem = y + 8;
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(5.5);
-    doc.text('UNIDADE DE POSTAGEM', rightColX + 2, yUnidPostagem + 3.5);
+    doc.setFontSize(6);
+    doc.text('UNIDADE DE POSTAGEM', rightColX + 0.7, yUnidPostagem + 2.5);
 
-    const yCarimbo = y + 25;
+    const yCarimbo = y + 16;
     doc.line(rightColX, yCarimbo, x + w, yCarimbo);
-    doc.text('CARIMBO UNIDADE DE ENTREGA', rightColX + 2, yCarimbo + 3.5);
+    doc.text('CARIMBO\nUNIDADE DE ENTREGA', rightColX + 17, yCarimbo + 2.5, { align: 'center' });
 
     // --- SEÇÃO INFERIOR: TENTATIVAS, OBSERVAÇÃO, MOTIVO DE DEVOLUÇÃO ---
     const yInferiorEnd = y + 80;
 
     // Coluna Tentativas de Entrega
-    const colTentativasW = 38;
+    const colTentativasW = 48;
     const xMotivoStart = x + leftColW + colTentativasW;
     doc.line(xMotivoStart, yDestDevEnd, xMotivoStart, yInferiorEnd);
 
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(5.5);
-    doc.text('TENTATIVAS DE ENTREGA', x + 10, yDestDevEnd + 3.5);
+    doc.text('TENTATIVAS DE ENTREGA', x + 18, yDestDevEnd + 2.5);
 
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(6);
-    doc.text('1ª ___/___/_______   ___:___h', x + 9.5, yDestDevEnd + 9);
-    doc.text('2ª ___/___/_______   ___:___h', x + 9.5, yDestDevEnd + 16);
-    doc.text('3ª ___/___/_______   ___:___h', x + 9.5, yDestDevEnd + 23);
+    doc.text('1ª ______/______/______     ______:______h', x + 9.5, yDestDevEnd + 9);
+    doc.text('2ª ______/______/______     ______:______h', x + 9.5, yDestDevEnd + 16);
+    doc.text('3ª ______/______/______     ______:______h', x + 9.5, yDestDevEnd + 23);
 
     // Observação
     const yObsEnd = yDestDevEnd + 7;
-    doc.line(xMotivoStart, yObsEnd, rightColX, yObsEnd);
+    doc.line(xMotivoStart, yObsEnd, x + w, yObsEnd); // Linha debaixo da observação
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(5.5);
-    doc.text('OBSERVAÇÃO:', xMotivoStart + 2, yDestDevEnd + 3.5);
+    doc.setFontSize(6);
+    doc.text('OBSERVAÇÃO:', xMotivoStart + 0.5, yDestDevEnd + 2.5);
 
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(6);
     if (data.observacao) {
-        doc.text(doc.splitTextToSize(data.observacao, 58), xMotivoStart + 18, yDestDevEnd + 3.5);
+        doc.text(doc.splitTextToSize(data.observacao.toUpperCase(), 60), xMotivoStart + 18, yDestDevEnd + 2.5);
     }
 
     // Motivo de Devolução
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(5.5);
-    doc.text('MOTIVO DE DEVOLUÇÃO', xMotivoStart + 18, yObsEnd + 3.5);
+    doc.setFontSize(6);
+    doc.text('MOTIVO DE DEVOLUÇÃO', xMotivoStart + 12, yObsEnd + 2.5);
 
     // Lista de opções idêntica ao leiaute oficial
     const motivosCol1 = [
@@ -349,7 +382,7 @@ function drawSingleAR(doc, x, y, w, h, data, logoBase64) {
         'Endereço insuficiente',
         'Não existe o número',
         'Desconhecido',
-        'Outros'
+        'Outros: _______________________________'
     ];
 
     const motivosCol2 = [
@@ -363,26 +396,30 @@ function drawSingleAR(doc, x, y, w, h, data, logoBase64) {
     doc.setFontSize(5.5);
 
     // Coluna 1 do Motivo de Devolução
-    let yMotivoPos = yObsEnd + 7.5;
-    motivosCol1.forEach((item) => {
-        doc.rect(xMotivoStart + 2, yMotivoPos - 2, 2.5, 2.5); // quadradinho de marcação
-        doc.text(item, xMotivoStart + 5.5, yMotivoPos);
-        yMotivoPos += 3.8;
+    let yMotivoPos = yObsEnd + 7;
+    motivosCol1.forEach((item, index) => {
+        const num = index + (index === 4 ? 5 : 1);
+        doc.rect(xMotivoStart + 2, yMotivoPos - 3, 2.5, 2.5); // quadradinho de marcação
+        doc.text(num.toString(), xMotivoStart + 2.7, yMotivoPos - 1);
+        doc.text(item, xMotivoStart + 5.5, yMotivoPos - 1);
+        yMotivoPos += 3.2;
     });
 
     // Coluna 2 do Motivo de Devolução
-    yMotivoPos = yObsEnd + 7.5;
-    motivosCol2.forEach((item) => {
-        doc.rect(xMotivoStart + 35, yMotivoPos - 2, 2.5, 2.5); // quadradinho de marcação
-        doc.text(item, xMotivoStart + 38.5, yMotivoPos);
-        yMotivoPos += 3.8;
+    yMotivoPos = yObsEnd + 7;
+    motivosCol2.forEach((item, index) => {
+        const num = index + 5;
+        doc.rect(xMotivoStart + 32, yMotivoPos - 3, 2.5, 2.5); // quadradinho de marcação
+        doc.text(num.toString(), xMotivoStart + 32.7, yMotivoPos - 1);
+        doc.text(item, xMotivoStart + 35.5, yMotivoPos - 1);
+        yMotivoPos += 3.2;
     });
 
     // Rubrica e Matrícula do Carteiro
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(5.5);
-    doc.text('RUBRICA E MATRÍCULA DO', rightColX + 2, yDestDevEnd + 3.5);
-    doc.text('CARTEIRO', rightColX + 2, yDestDevEnd + 6.5);
+    doc.setFontSize(6);
+    doc.text('RUBRICA E MATRÍCULA DO', rightColX + 0.7, yDestDevEnd + 9.5);
+    doc.text('CARTEIRO', rightColX + 0.7, yDestDevEnd + 12);
 
     // --- LINHAS FINAIS: ASSINATURA, DATA, NOME E DOC ---
     const yAssinatura = y + 80;
@@ -393,11 +430,11 @@ function drawSingleAR(doc, x, y, w, h, data, logoBase64) {
 
     // Assinatura do Recebedor / Data de Entrega
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(5.5);
-    doc.text('ASSINATURA DO RECEBEDOR', x + 9.5, yAssinatura + 3.5);
-    doc.text('DATA DE ENTREGA', rightColX + 2, yAssinatura + 3.5);
+    doc.setFontSize(6);
+    doc.text('ASSINATURA DO RECEBEDOR', x + 8.4, yAssinatura + 2.5);
+    doc.text('DATA DE ENTREGA', rightColX + 0.7, yAssinatura + 2.5);
 
     // Nome Legível / Nº Doc de Identidade
-    doc.text('NOME LEGÍVEL DO RECEBEDOR', x + 9.5, yNome + 3.5);
-    doc.text('Nº DOC. DE IDENTIDADE', rightColX + 2, yNome + 3.5);
+    doc.text('NOME LEGÍVEL DO RECEBEDOR', x + 8.4, yNome + 2.5);
+    doc.text('Nº DOC. DE IDENTIDADE', rightColX + 0.7, yNome + 2.5);
 }
