@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="pt-BR">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta
+			name="description"
+			content="Gerador de Aviso de Recebimento (AR) dos Correios para emissão e impressão rápida."
+		/>
+		<meta name="theme-color" content="#16305a" />
+		<title>Gerador de AR - Utilitários</title>
+		<script>
+			(function () {
+				const theme = localStorage.getItem('theme') || 'light';
+				document.documentElement.setAttribute('data-theme', theme);
+			})();
+		</script>
+		<link rel="icon" type="image/png" href="../assets/favicon.png" />
+		<link
+			rel="apple-touch-icon"
+			sizes="180x180"
+			href="../assets/apple-touch-icon.png"
+		/>
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			rel="stylesheet"
+			href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+		/>
+		<link rel="stylesheet" href="../css/global.css" />
+		<link rel="stylesheet" href="../css/ar-generator.css" />
+		<!-- Lib jsPDF para geração client-side do PDF -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+		<script src="../js/global.js" defer></script>
+		<script src="../js/ar-generator.js" defer></script>
+	</head>
+	<body>
+		<header>
+			<div class="header-content">
+				<a
+					href="../index.html"
+					class="back-btn"
+					title="Voltar ao menu"
+					aria-label="Voltar ao menu"
+				>
+					<i class="fas fa-arrow-left"></i>
+				</a>
+				<i class="fas fa-tools"></i>
+				<h1>UTILITÁRIOS</h1>
+				<button
+					id="themeToggleBtn"
+					class="theme-toggle-btn"
+					title="Alternar tema"
+					aria-label="Alternar entre tema claro e escuro"
+				>
+					<i id="themeIcon" class="fas fa-moon"></i>
+				</button>
+			</div>
+		</header>
+
+		<main>
+			<div class="content-wrapper ar-wrapper">
+				<h1>Gerador de AR (Aviso de Recebimento)</h1>
+
+				<div class="info-box">
+					<strong>Como funciona:</strong> Preencha os campos abaixo com as
+					informações do destinatário e clique em <strong>Incluir</strong> para
+					adicionar à lista. Ao finalizar, clique em
+					<strong>Imprimir</strong> para gerar o arquivo PDF com a diagramação
+					oficial dos Correios.
+				</div>
+
+				<form id="arForm" class="ar-form" autocomplete="off">
+					<div class="form-grid">
+						<div class="form-group col-4">
+							<label for="cep">CEP *</label>
+							<input
+								type="text"
+								id="cep"
+								placeholder="00000-000"
+								maxlength="9"
+								required
+								inputmode="numeric"
+							/>
+						</div>
+
+						<div class="form-group col-8">
+							<label for="nome">Nome / Empresa / Promoção *</label>
+							<input
+								type="text"
+								id="nome"
+								maxlength="50"
+								placeholder="Ex: João da Silva / Empresa X"
+								required
+							/>
+						</div>
+
+						<div class="form-group col-9">
+							<label for="endereco">Endereço *</label>
+							<input
+								type="text"
+								id="endereco"
+								maxlength="50"
+								placeholder="Ex: Rua João Pessoa"
+								required
+							/>
+						</div>
+
+						<div class="form-group col-3">
+							<label for="numero">Número *</label>
+							<input
+								type="text"
+								id="numero"
+								maxlength="8"
+								placeholder="Ex: 123"
+								inputmode="numeric"
+								required
+							/>
+						</div>
+
+						<div class="form-group col-6">
+							<label for="complemento">Complemento</label>
+							<input
+								type="text"
+								id="complemento"
+								maxlength="50"
+								placeholder="Ex: Apt 12, Bloco B"
+							/>
+						</div>
+
+						<div class="form-group col-6">
+							<label for="bairro">Bairro *</label>
+							<input
+								type="text"
+								id="bairro"
+								maxlength="50"
+								placeholder="Ex: Centro"
+								required
+							/>
+						</div>
+
+						<div class="form-group col-3">
+							<label for="uf">UF *</label>
+							<select id="uf" required>
+								<option value="">Carregando...</option>
+							</select>
+						</div>
+
+						<div class="form-group col-9">
+							<label for="cidade">Cidade *</label>
+							<select id="cidade" required disabled>
+								<option value="">Selecione a UF primeiro</option>
+							</select>
+						</div>
+
+						<div class="form-group col-12">
+							<label for="observacao">Observação</label>
+							<input
+								type="text"
+								id="observacao"
+								maxlength="60"
+								placeholder="Ex: Notificação de Débito Nº 45/2026"
+							/>
+						</div>
+					</div>
+
+					<div class="form-actions">
+						<button type="submit" id="btnIncluir" class="btn-primary">
+							<i class="fas fa-plus-circle"></i> Incluir
+						</button>
+					</div>
+				</form>
+
+				<!-- Seção da Tabela de Registros Cadastrados -->
+				<div id="tableSection" class="table-section" style="display: none">
+					<h3 class="table-title">
+						Registros Cadastrados (<span id="countRegistros">0</span>)
+					</h3>
+					<div class="table-responsive">
+						<table id="arTable" class="ar-table">
+							<thead>
+								<tr>
+									<th>Nome / Empresa</th>
+									<th>Endereço</th>
+									<th>Bairro</th>
+									<th>Cidade/UF</th>
+									<th>CEP</th>
+									<th>Obs.</th>
+									<th class="text-center">Ações</th>
+								</tr>
+							</thead>
+							<tbody id="tableBody"></tbody>
+						</table>
+					</div>
+
+					<div class="btn-group action-buttons">
+						<button id="btnImprimir" class="btn-success">
+							<i class="fas fa-print"></i> Imprimir PDF
+						</button>
+						<button id="btnLimpar" class="btn-danger">
+							<i class="fas fa-trash-alt"></i> Limpar Tudo
+						</button>
+					</div>
+				</div>
+			</div>
+		</main>
+
+		<footer>
+			<div class="social-links">
+				<a
+					href="https://github.com/jhonatancassante"
+					target="_blank"
+					rel="noopener"
+					aria-label="GitHub de Jhonatan Cassante"
+				>
+					<i class="fab fa-github"></i>
+				</a>
+				<a
+					href="https://www.instagram.com/jhonatancassante/"
+					target="_blank"
+					rel="noopener"
+					aria-label="Instagram de Jhonatan Cassante"
+				>
+					<i class="fab fa-instagram"></i>
+				</a>
+			</div>
+			<div class="copyright">
+				© 2026 Jhonatan Cassante. Todos os direitos reservados.
+			</div>
+			<a
+				href="https://www.flaticon.com/br/icones-gratis/servicos-de-utilidade-publica"
+				title="serviços de utilidade pública ícones"
+				class="attribution"
+				target="_blank"
+				rel="noopener"
+			>
+				Ícones por Maan Icons - Flaticon
+			</a>
+		</footer>
+	</body>
+</html>
