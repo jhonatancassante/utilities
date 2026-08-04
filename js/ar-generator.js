@@ -33,6 +33,52 @@ document.addEventListener('DOMContentLoaded', () => {
         e.target.value = value;
     });
 
+    // CONSULTA VIACEP NO EVENTO BLUR (AO PERDER O FOCO)
+    cepInput.addEventListener('blur', async () => {
+        const cleanCep = cepInput.value.replace(/\D/g, '');
+
+        // Valida se o CEP tem exatamente 8 dígitos
+        if (cleanCep.length !== 8) return;
+
+        try {
+            const res = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`);
+            const data = await res.json();
+
+            // Se o ViaCEP retornar erro (CEP não encontrado), ignora e mantém os campos como estão
+            if (data.erro) {
+                console.warn('CEP não encontrado na base do ViaCEP.');
+                return;
+            }
+
+            // Preenche os campos de endereço e bairro se retornarem dados
+            if (data.logradouro) enderecoInput.value = data.logradouro;
+            if (data.bairro) bairroInput.value = data.bairro;
+
+            // Preenche o complemento se retornado e o campo estiver vazio
+            if (data.complemento && !complementoInput.value) {
+                complementoInput.value = data.complemento;
+            }
+
+            // Seleciona a UF e carrega as cidades correspondentes no <select>
+            if (data.uf) {
+                ufSelect.value = data.uf;
+                // Aguarda o carregamento das cidades da UF vindo da API do IBGE
+                await loadCidadesByUF(data.uf);
+
+                // Seleciona a cidade obtida pelo ViaCEP no <select>
+                if (data.localidade) {
+                    cidadeSelect.value = data.localidade;
+                }
+            }
+
+            // Foca automaticamente no campo Número para agilizar o preenchimento
+            numeroInput.focus();
+
+        } catch (err) {
+            console.error('Erro ao consultar o CEP no ViaCEP:', err);
+        }
+    });
+
     numeroInput.addEventListener('input', (e) => {
         e.target.value = e.target.value.replace(/\D/g, '').slice(0, 8);
     });
@@ -57,8 +103,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    ufSelect.addEventListener('change', async (e) => {
-        const uf = e.target.value;
+    // Função assíncrona para buscar e popular as cidades por UF (reutilizável)
+    async function loadCidadesByUF(uf) {
         cidadeSelect.innerHTML = '<option value="">Carregando...</option>';
         cidadeSelect.disabled = true;
 
@@ -82,6 +128,10 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Erro ao carregar cidades:', err);
             cidadeSelect.innerHTML = '<option value="">Erro ao carregar</option>';
         }
+    }
+
+    ufSelect.addEventListener('change', (e) => {
+        loadCidadesByUF(e.target.value);
     });
 
     // 3. INCLUIR REGISTRO
@@ -127,18 +177,18 @@ document.addEventListener('DOMContentLoaded', () => {
             const endCompleto = `${item.endereco}, ${item.numero}${item.complemento ? ' (' + item.complemento + ')' : ''}`;
 
             tr.innerHTML = `
-				<td><strong>${escapeHtml(item.nome)}</strong></td>
-				<td>${escapeHtml(endCompleto)}</td>
-				<td>${escapeHtml(item.bairro)}</td>
-				<td>${escapeHtml(item.cidade)}/${item.uf}</td>
-				<td>${item.cep}</td>
-				<td>${escapeHtml(item.observacao || '-')}</td>
-				<td class="text-center">
-					<button class="btn-delete" title="Excluir registro" aria-label="Excluir" data-index="${idx}">
-						<i class="fas fa-trash-alt"></i>
-					</button>
-				</td>
-			`;
+                <td><strong>${escapeHtml(item.nome)}</strong></td>
+                <td>${escapeHtml(endCompleto)}</td>
+                <td>${escapeHtml(item.bairro)}</td>
+                <td>${escapeHtml(item.cidade)}/${item.uf}</td>
+                <td>${item.cep}</td>
+                <td>${escapeHtml(item.observacao || '-')}</td>
+                <td class="text-center">
+                    <button class="btn-delete" title="Excluir registro" aria-label="Excluir" data-index="${idx}">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </td>
+            `;
             tableBody.appendChild(tr);
         });
 
