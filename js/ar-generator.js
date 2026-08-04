@@ -186,38 +186,6 @@ document.addEventListener('DOMContentLoaded', () => {
     function escapeHtml(str) {
         return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
     }
-
-    // =====================================================
-    // FUNÇÃO PARA PREENCHIMENTO AUTOMÁTICO (MODO TESTE)
-    // Descomente a linha abaixo para usar os dados de teste.
-    preencherDadosTeste();
-    // =====================================================
-
-    async function preencherDadosTeste() {
-        // Aguarda as UFs serem carregadas (enquanto houver só a opção "Selecione...")
-        while (ufSelect.options.length <= 1) {
-            await new Promise(resolve => setTimeout(resolve, 100));
-        }
-
-        // Seleciona SP e dispara o evento para carregar as cidades
-        ufSelect.value = 'SP';
-        ufSelect.dispatchEvent(new Event('change'));
-
-        // Aguarda as cidades carregarem
-        while (cidadeSelect.options.length <= 1) {
-            await new Promise(resolve => setTimeout(resolve, 100));
-        }
-
-        // Preenche todos os campos (a máscara do CEP já está formatada)
-        cepInput.value = '13386-082';
-        nomeInput.value = 'Jhonatan Cassante';
-        enderecoInput.value = 'Rua José Roberto Muniz';
-        numeroInput.value = '27';
-        complementoInput.value = 'Casa';
-        bairroInput.value = 'Jardim Santa Rita I';
-        cidadeSelect.value = 'Nova Odessa';
-        observacaoInput.value = 'Protocolo 1234/2026 XXXXXX XXXX XXXXXXXXX XXXXXXXX XXXXXXXX';
-    }
 });
 
 function generateARPDF(registros, logoBase64) {
@@ -286,8 +254,8 @@ function drawSingleAR(doc, x, y, w, h, data, logoBase64) {
     }
 
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(7.5);
-    doc.text('AVISO DE\nRECEBIMENTO', x + 50, y + 3);
+    doc.setFontSize(9);
+    doc.text('AVISO DE RECEBIMENTO', x + 41, y + 5);
 
     doc.setFontSize(15);
     doc.text('AR', x + 85, y + 6);
