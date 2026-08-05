@@ -227,7 +227,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     btnImprimir.addEventListener('click', () => {
         if (registros.length === 0) return;
-        generateARPDF(registros, logoBase64);
+        generatePdfComARsEEtiquetas(registros, logoBase64);
     });
 
     function escapeHtml(str) {
@@ -235,7 +235,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-function generateARPDF(registros, logoBase64) {
+function generatePdfComARsEEtiquetas(registros, logoBase64) {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF({
         orientation: 'p',
@@ -243,9 +243,10 @@ function generateARPDF(registros, logoBase64) {
         format: 'a4'
     });
 
-    const arWidth = 140;   // 140mm
-    const arHeight = 94;   // 94mm
-    const pageX = (210 - arWidth) / 2; // Centralizado no A4
+    // --- 1. GERAÇÃO DOS ARs ---
+    const arWidth = 140;
+    const arHeight = 94;
+    const pageX = (210 - arWidth) / 2; // Centralizado na página A4 (35mm)
     const yTop = 25;
     const yBottom = 155;
 
@@ -259,8 +260,39 @@ function generateARPDF(registros, logoBase64) {
         drawSingleAR(doc, pageX, startY, arWidth, arHeight, item, logoBase64);
     });
 
+    // --- 2. GERAÇÃO DAS ETIQUETAS (Em página separada) ---
+    // Adiciona uma nova página obrigatoriamente para as etiquetas
+    doc.addPage();
+
+    // Parâmetros da etiqueta e grade A4
+    const eWidth = 98;
+    const eHeight = 45;
+    const marginX = 7;   // (210 - (98 * 2)) / 2 = 7mm
+    const marginY = 8.5; // Margem superior inicial em A4
+
+    const maxCols = 2;
+    const maxRows = 4;
+    const itemsPerPage = maxCols * maxRows; // 8 etiquetas por página
+
+    registros.forEach((item, index) => {
+        const pageIndex = index % itemsPerPage;
+
+        // Se passar de 8 etiquetas, cria uma nova página
+        if (index > 0 && pageIndex === 0) {
+            doc.addPage();
+        }
+
+        const col = pageIndex % maxCols; // 0 ou 1
+        const row = Math.floor(pageIndex / maxCols); // 0, 1, 2 ou 3
+
+        const posX = marginX + (col * eWidth);
+        const posY = marginY + (row * eHeight);
+
+        drawSingleLabel(doc, posX, posY, eWidth, eHeight, item, logoBase64);
+    });
+
     const timestamp = new Date().toISOString().replace(/[-:T.]/g, '').slice(0, 14);
-    doc.save(`AR_Correios_${timestamp}.pdf`);
+    doc.save(`AR_e_Etiquetas_${timestamp}.pdf`);
 }
 
 function drawSingleAR(doc, x, y, w, h, data, logoBase64) {
@@ -452,4 +484,92 @@ function drawSingleAR(doc, x, y, w, h, data, logoBase64) {
     // Nome Legível / Nº Doc de Identidade
     doc.text('NOME LEGÍVEL DO RECEBEDOR', x + 8.4, yNome + 2.5);
     doc.text('Nº DOC. DE IDENTIDADE', rightColX + 0.7, yNome + 2.5);
+}
+
+function drawSingleLabel(doc, x, y, w, h, data, logoBase64) {
+    doc.setLineWidth(0.35);
+    doc.setDrawColor(0);
+
+    // Moldura da etiqueta
+    doc.rect(x, y, w, h);
+
+    // --- CABEÇALHO ---
+    // Tag preta "DESTINATÁRIO"
+    doc.setFillColor(0, 0, 0);
+    doc.rect(x, y, 35, 5.5, 'F');
+
+    doc.setTextColor(255, 255, 255);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(9);
+    doc.text('DESTINATÁRIO', x + 5.5, y + 4);
+
+    // Logo Correios na direita
+    doc.setTextColor(0, 0, 0);
+    if (logoBase64) {
+        doc.addImage(logoBase64, 'PNG', x + w - 16, y + 1.2, 14, 3);
+    } else {
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(7);
+        doc.text('Correios', x + w - 15, y + 4);
+    }
+
+    // --- DADOS DO DESTINATÁRIO ---
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(6.5);
+
+    let nextY = y + 8;
+    doc.text(data.nome, x + 2, nextY);
+    nextY += 3;
+    doc.text(`${data.endereco}, ${data.numero}`, x + 2, nextY);
+    nextY += 3;
+
+    if (data.complemento) {
+        doc.text(data.complemento, x + 2, nextY);
+        nextY += 3;
+    }
+
+    doc.text(data.bairro, x + 2, nextY);
+    nextY += 4.5;
+
+    // CEP em Negrito + Cidade/UF
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(8);
+    doc.text(data.cep, x + 2, nextY);
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8);
+    doc.text(`${data.cidade}-${data.uf}`, x + 25, nextY);
+
+    // --- CÓDIGO DE BARRAS DO CEP ---
+    // Começa em 4mm da borda esquerda, 23mm da borda superior, tamanho 47mm x 20mm
+    const cleanCep = data.cep.replace(/\D/g, '');
+    if (cleanCep) {
+        const barcodeCanvas = document.createElement('canvas');
+        try {
+            JsBarcode(barcodeCanvas, cleanCep, {
+                format: 'CODE128',
+                displayValue: false,
+                margin: 0
+            });
+            const barcodeDataUrl = barcodeCanvas.toDataURL('image/png');
+            doc.addImage(barcodeDataUrl, 'PNG', x + 4, y + 23, 47, 20);
+        } catch (e) {
+            console.error('Erro ao gerar código de barras:', e);
+        }
+    }
+
+    // --- SEÇÃO OBSERVAÇÃO ---
+    if (data.observacao) {
+        const obsX = x + 55;
+        const obsY = y + 26;
+
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(8.5);
+        doc.text('Observação:', obsX, obsY);
+
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(8);
+        const splitObs = doc.splitTextToSize(data.observacao, 38);
+        doc.text(splitObs, obsX, obsY + 4.5);
+    }
 }
