@@ -266,7 +266,7 @@ function generatePdfComARsEEtiquetas(registros, logoBase64) {
 
     // Parâmetros da etiqueta e grade A4
     const eWidth = 98;
-    const eHeight = 45;
+    const eHeight = 47;
     const marginX = 7;   // (210 - (98 * 2)) / 2 = 7mm
     const marginY = 8.5; // Margem superior inicial em A4
 
@@ -491,7 +491,7 @@ function drawSingleLabel(doc, x, y, w, h, data, logoBase64) {
     doc.setDrawColor(0);
 
     // Moldura da etiqueta
-    doc.rect(x, y, w, h);
+    doc.rect(x, y, w - 2, h - 2);
 
     // --- CABEÇALHO ---
     // Tag preta "DESTINATÁRIO"
@@ -506,7 +506,7 @@ function drawSingleLabel(doc, x, y, w, h, data, logoBase64) {
     // Logo Correios na direita
     doc.setTextColor(0, 0, 0);
     if (logoBase64) {
-        doc.addImage(logoBase64, 'PNG', x + w - 16, y + 1.2, 14, 3);
+        doc.addImage(logoBase64, 'PNG', x + w - 18, y + 1.2, 14, 3);
     } else {
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(7);
