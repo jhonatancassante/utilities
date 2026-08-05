@@ -356,10 +356,18 @@ function drawSingleAR(doc, x, y, w, h, data, logoBase64) {
     doc.text('DESTINATÁRIO', x + 10, y + 11.5);
 
     doc.setFont('helvetica', 'normal');
-    doc.text(data.nome.toUpperCase(), x + 10, y + 14);
-    doc.text(`${data.endereco.toUpperCase()}, ${data.numero}${data.complemento ? ' ' + data.complemento.toUpperCase() : ''}`, x + 10, y + 16.5);
-    doc.text(data.bairro.toUpperCase(), x + 10, y + 19);
-    doc.text(`${data.cep} - ${data.cidade.toUpperCase()} - ${data.uf.toUpperCase()}`, x + 10, y + 21.5);
+    let nextY = y + 14;
+    doc.text(data.nome.toUpperCase(), x + 10, nextY);
+    nextY += 2.5;
+    doc.text(`${data.endereco.toUpperCase()}, ${data.numero}`, x + 10, nextY);
+    nextY += 2.5;
+    if (data.complemento) {
+        doc.text(data.complemento.toUpperCase(), x + 10, nextY);
+        nextY += 2.5;
+    }
+    doc.text(data.bairro.toUpperCase(), x + 10, nextY);
+    nextY += 2.5;
+    doc.text(`${data.cep} - ${data.cidade.toUpperCase()} - ${data.uf.toUpperCase()}`, x + 10, nextY);
 
     // Barcode / Código de Registro Placeholder
     doc.setLineDashPattern([0.3, 0.5], 0);
