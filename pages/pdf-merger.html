@@ -58,12 +58,21 @@
 
 		<main>
 			<div class="content-wrapper">
-				<h1>Unificador de PDFs</h1>
+				<h1>
+					Unificador de PDFs
+					<i
+						id="helpInfo"
+						class="fas fa-question-circle"
+						onclick="toggleInfoBox()"
+						title="Clique aqui para obter mais informações."
+					></i>
+				</h1>
 
-				<div class="info-box">
-					Os arquivos serão ordenados alfabeticamente pelo nome. PDFs com número
-					ímpar de páginas receberão automaticamente uma página em branco ao
-					final para manter a paridade.
+				<div class="info-box" id="infoBox">
+					<strong>Como funciona:</strong> Clique ou arraste seus arquivos PDF
+					para enviar. Os arquivos serão ordenados alfabeticamente pelo nome.
+					PDFs com número ímpar de páginas receberão automaticamente uma página
+					em branco ao final para manter a paridade.
 				</div>
 
 				<div

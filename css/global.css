@@ -321,7 +321,15 @@ main {
 	margin-top: 10px;
 }
 
+#helpInfo {
+	cursor: pointer;
+	color: var(--accent);
+	font-size: 0.75em;
+	margin-left: 8px;
+}
+
 .info-box {
+	display: none;
 	background-color: var(--info-bg);
 	border-left: 4px solid var(--accent);
 	border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
@@ -329,7 +337,7 @@ main {
 	margin-bottom: 20px;
 	font-size: 14px;
 	color: var(--text-primary);
-	text-align: left;
+	text-align: justify;
 }
 
 /* Upload Dropzone */

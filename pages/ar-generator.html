@@ -62,14 +62,22 @@
 
 		<main>
 			<div class="content-wrapper ar-wrapper">
-				<h1>Gerador de AR (Aviso de Recebimento)</h1>
+				<h1>
+					Gerador de AR (Aviso de Recebimento)
+					<i
+						id="helpInfo"
+						class="fas fa-question-circle"
+						onclick="toggleInfoBox()"
+						title="Clique aqui para obter mais informações."
+					></i>
+				</h1>
 
-				<div class="info-box">
+				<div class="info-box" id="infoBox">
 					<strong>Como funciona:</strong> Preencha os campos abaixo com as
 					informações do destinatário e clique em <strong>Incluir</strong> para
 					adicionar à lista. Ao finalizar, clique em
 					<strong>Imprimir</strong> para gerar o arquivo PDF com a diagramação
-					oficial dos Correios.
+					oficial dos Correios junto com as etiquetas para os envelopes.
 				</div>
 
 				<form id="arForm" class="ar-form" autocomplete="off">

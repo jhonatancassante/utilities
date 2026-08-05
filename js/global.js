@@ -115,3 +115,11 @@ function getFormattedTimestamp() {
         now.getSeconds().toString().padStart(2, '0')
     );
 }
+
+function toggleInfoBox() {
+    const infoBox = document.getElementById('infoBox');
+    if (infoBox) {
+        const currentDisplay = window.getComputedStyle(infoBox).display;
+        infoBox.style.display = currentDisplay === 'none' ? 'block' : 'none';
+    }
+}

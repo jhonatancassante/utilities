@@ -59,12 +59,22 @@
 
 		<main>
 			<div class="content-wrapper">
-				<h1>Conversor CSV para JSON (Para TRSS)</h1>
+				<h1>
+					Conversor CSV para JSON (TRSS)
+					<i
+						id="helpInfo"
+						class="fas fa-question-circle"
+						onclick="toggleInfoBox()"
+						title="Clique aqui para obter mais informações."
+					></i>
+				</h1>
 
-				<div id="infoBox" class="info-box">
-					<strong>Filtro ativo:</strong> Este conversor é apenas para CSV de
-					TARSU (TRSS) e extrai exclusivamente as propriedades:
-					<code>ccm</code>, <code>quantidade</code> e <code>valor</code>.
+				<div class="info-box" id="infoBox">
+					<strong>Como funciona:</strong>Clique ou arraste seu arquivo CSV para
+					enviar. Vai converter o arquivo em JSON e mostrá-lo abaixo para
+					download o copiar. Este conversor é apenas para CSV de TARSU (TRSS) e
+					extrai exclusivamente as propriedades: <code>ccm</code>,
+					<code>quantidade</code> e <code>valor</code>.
 				</div>
 
 				<div

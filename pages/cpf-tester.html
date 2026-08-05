@@ -58,12 +58,21 @@
 
 		<main>
 			<div class="content-wrapper">
-				<h1>Testador de Erros de CPF</h1>
+				<h1>
+					Testador de Erros de CPF
+					<i
+						id="helpInfo"
+						class="fas fa-question-circle"
+						onclick="toggleInfoBox()"
+						title="Clique aqui para obter mais informações."
+					></i>
+				</h1>
 
-				<div class="info-box">
-					<strong>Como funciona:</strong> Digite um CPF. A ferramenta irá
-					calcular o dígito verificador correto para a base digitada e testar
-					trocas em cada posição para encontrar combinações válidas.
+				<div class="info-box" id="infoBox">
+					<strong>Como funciona:</strong> Digite um CPF. A ferramenta irá dizer
+					se esse CPF é válido, vai calcular o dígito verificador correto para a
+					base digitada e testar trocas em cada posição para encontrar
+					combinações válidas.
 				</div>
 
 				<div class="cpf-input-container">

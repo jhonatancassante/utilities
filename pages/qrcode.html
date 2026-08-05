@@ -63,7 +63,20 @@
 
 		<main>
 			<div class="content-wrapper">
-				<h1>Gerador de QR Code</h1>
+				<h1>
+					Gerador de QR Code
+					<i
+						id="helpInfo"
+						class="fas fa-question-circle"
+						onclick="toggleInfoBox()"
+						title="Clique aqui para obter mais informações."
+					></i>
+				</h1>
+
+				<div class="info-box" id="infoBox">
+					<strong>Como funciona:</strong> Digite o link que deseja codificar,
+					selecione as cores e clique em "Gerar QR Code".
+				</div>
 
 				<div class="input-group">
 					<label

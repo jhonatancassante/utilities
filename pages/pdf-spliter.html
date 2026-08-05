@@ -60,7 +60,23 @@
 
 		<main>
 			<div class="content-wrapper">
-				<h1>Extrair Páginas de PDFs</h1>
+				<h1>
+					Extrair Páginas de PDFs
+					<i
+						id="helpInfo"
+						class="fas fa-question-circle"
+						onclick="toggleInfoBox()"
+						title="Clique aqui para obter mais informações."
+					></i>
+				</h1>
+
+				<div class="info-box" id="infoBox">
+					<strong>Como funciona:</strong> Clique ou arraste seus arquivos PDF
+					para enviar, múltiplos arquivos permitidos. Em seguida, defina a
+					página inicial e o número de páginas que deseja extrair de cada PDF. O
+					resultado será um arquivo PDF (caso seja enviado apenas um arquivo) ou
+					ZIP (caso sejam enviados vários arquivos) contendo os PDFs extraídos.
+				</div>
 
 				<div
 					class="upload-section"
