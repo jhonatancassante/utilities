@@ -525,8 +525,10 @@ function drawSingleLabel(doc, x, y, w, h, data, logoBase64) {
 
     if (data.complemento) {
         doc.text(data.complemento, x + 2, nextY);
-        nextY += 3;
+    } else {
+        doc.text(" ", x + 2, nextY);
     }
+    nextY += 3;
 
     doc.text(data.bairro, x + 2, nextY);
     nextY += 4.5;
