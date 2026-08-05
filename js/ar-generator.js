@@ -71,6 +71,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
+            nomeInput.focus();
+
         } catch (err) {
             console.error('Erro ao consultar o CEP no ViaCEP:', err);
         }
@@ -525,12 +527,14 @@ function drawSingleLabel(doc, x, y, w, h, data, logoBase64) {
 
     if (data.complemento) {
         doc.text(data.complemento, x + 2, nextY);
+        nextY += 3;
+        doc.text(data.bairro, x + 2, nextY);
     } else {
+        doc.text(data.bairro, x + 2, nextY);
         doc.text(" ", x + 2, nextY);
+        nextY += 3;
     }
-    nextY += 3;
 
-    doc.text(data.bairro, x + 2, nextY);
     nextY += 4.5;
 
     // CEP em Negrito + Cidade/UF
