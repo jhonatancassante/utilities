@@ -71,9 +71,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
-            // Foca automaticamente no campo Número para agilizar o preenchimento
-            numeroInput.focus();
-
         } catch (err) {
             console.error('Erro ao consultar o CEP no ViaCEP:', err);
         }
