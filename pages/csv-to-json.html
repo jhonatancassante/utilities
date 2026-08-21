@@ -5,10 +5,10 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<meta
 			name="description"
-			content="Converta arquivos CSV de TARSU (TRSS) em JSON, extraindo apenas ccm, quantidade e valor."
+			content="Converta qualquer arquivo CSV em JSON, escolhendo codificação, delimitador, linha de cabeçalho e colunas desejadas."
 		/>
 		<meta name="theme-color" content="#16305a" />
-		<title>Criador de JSON para TRSS</title>
+		<title>Conversor CSV para JSON</title>
 		<script>
 			(function () {
 				const theme = localStorage.getItem('theme') || 'light';
@@ -23,7 +23,7 @@
 		/>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 		<script src="../js/global.js" defer></script>
-		<script src="../js/csv-to-json-tarsu.js" defer></script>
+		<script src="../js/csv-to-json.js" defer></script>
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 		<link
@@ -31,7 +31,7 @@
 			href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
 		/>
 		<link rel="stylesheet" href="../css/global.css" />
-		<link rel="stylesheet" href="../css/csv-to-json-tarsu.css" />
+		<link rel="stylesheet" href="../css/csv-to-json.css" />
 	</head>
 	<body>
 		<header>
@@ -45,7 +45,7 @@
 					<i class="fas fa-arrow-left"></i>
 				</a>
 				<i class="fas fa-file-csv"></i>
-				<h1>JSON para TARSU</h1>
+				<h1>Conversor CSV para JSON</h1>
 				<button
 					id="themeToggleBtn"
 					class="theme-toggle-btn"
@@ -60,7 +60,7 @@
 		<main>
 			<div class="content-wrapper">
 				<h1>
-					Conversor CSV para JSON (TRSS)
+					Conversor CSV para JSON
 					<i
 						id="helpInfo"
 						class="fas fa-question-circle"
@@ -70,11 +70,11 @@
 				</h1>
 
 				<div class="info-box" id="infoBox">
-					<strong>Como funciona:</strong>Clique ou arraste seu arquivo CSV para
-					enviar. Vai converter o arquivo em JSON e mostrá-lo abaixo para
-					download o copiar. Este conversor é apenas para CSV de TARSU (TRSS) e
-					extrai exclusivamente as propriedades: <code>ccm</code>,
-					<code>quantidade</code> e <code>valor</code>.
+					<strong>Como funciona:</strong> envie qualquer arquivo CSV. Depois
+					ajuste, se necessário, a codificação e o delimitador, escolha qual
+					linha do arquivo é o cabeçalho (útil quando o arquivo tem linhas de
+					título antes dos dados) e marque as colunas que deseja incluir. O JSON
+					é gerado automaticamente e pode ser copiado ou baixado.
 				</div>
 
 				<div
@@ -82,18 +82,64 @@
 					id="drop-zone"
 					tabindex="0"
 					role="button"
-					aria-label="Clique ou arraste o arquivo TARSU CSV para enviar"
+					aria-label="Clique ou arraste o arquivo CSV para enviar"
 				>
-					<span id="file-label"
-						>Clique ou arraste o arquivo TARSU CSV aqui</span
-					>
+					<span id="file-label">Clique ou arraste o arquivo CSV aqui</span>
 					<input type="file" id="csvFile" accept=".csv" />
 				</div>
 
 				<div id="errorMessage" class="error" aria-live="assertive"></div>
 
+				<div id="configPanel" class="config-panel" style="display: none">
+					<div class="settings-row">
+						<div class="setting-field">
+							<label for="encodingSelect">Codificação do arquivo</label>
+							<select id="encodingSelect">
+								<option value="ISO-8859-1">
+									ISO-8859-1 / Latin1 (padrão em exportações de sistemas
+									municipais)
+								</option>
+								<option value="UTF-8">UTF-8</option>
+							</select>
+						</div>
+						<div class="setting-field">
+							<label for="delimiterSelect">Delimitador</label>
+							<select id="delimiterSelect">
+								<option value="auto">Detectar automaticamente</option>
+								<option value=";">Ponto e vírgula ( ; )</option>
+								<option value=",">Vírgula ( , )</option>
+								<option value="\t">Tabulação</option>
+							</select>
+						</div>
+					</div>
+
+					<div class="setting-block">
+						<label>Selecione a linha de cabeçalho</label>
+						<p class="setting-hint">
+							Escolha a linha que contém os nomes das colunas. Use isso quando o
+							arquivo tiver linhas de título ou relatório antes dos dados.
+						</p>
+						<div id="headerLineList" class="header-line-list"></div>
+					</div>
+
+					<div class="setting-block">
+						<div class="columns-header">
+							<label>Colunas a incluir no JSON</label>
+							<div class="select-group">
+								<button type="button" id="selectAllColsBtn" class="link-btn">
+									Selecionar todas
+								</button>
+								<button type="button" id="selectNoneColsBtn" class="link-btn">
+									Limpar seleção
+								</button>
+							</div>
+						</div>
+						<div id="columnsGrid" class="columns-grid"></div>
+					</div>
+				</div>
+
 				<div class="json-container">
-					<h3>Resultado do JSON Final:</h3>
+					<h3>Resultado do JSON:</h3>
 					<button
 						id="copyBtn"
 						class="copy-btn"
@@ -103,7 +149,7 @@
 					>
 						<i class="fa-regular fa-copy"></i>
 					</button>
-					<pre><code id="jsonOutput">O resultado filtrado aparecerá aqui após o envio do arquivo...</code></pre>
+					<pre><code id="jsonOutput">O resultado aparecerá aqui após o envio do arquivo...</code></pre>
 				</div>
 
 				<div id="btnGroup" class="btn-group" style="display: none">
