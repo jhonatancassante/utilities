@@ -1,162 +1,298 @@
 // js/ar-generator.js
 
-document.addEventListener('DOMContentLoaded', () => {
-    const arForm = document.getElementById('arForm');
-    const cepInput = document.getElementById('cep');
-    const nomeInput = document.getElementById('nome');
-    const enderecoInput = document.getElementById('endereco');
-    const numeroInput = document.getElementById('numero');
-    const complementoInput = document.getElementById('complemento');
-    const bairroInput = document.getElementById('bairro');
-    const ufSelect = document.getElementById('uf');
-    const cidadeSelect = document.getElementById('cidade');
-    const observacaoInput = document.getElementById('observacao');
+// Dados de remetente pré-preenchidos (editáveis na aba "Remetente")
+const REMETENTE_PADRAO = {
+    nome: 'MUNICÍPIO DE NOVA ODESSA - SETOR DE TRIBUTAÇÃO E DÍVIDA ATIVA',
+    cep: '13380-017',
+    endereco: 'AVENIDA JOÃO PESSOA',
+    numero: '777',
+    complemento: '',
+    bairro: 'CENTRO',
+    uf: 'SP',
+    cidade: 'Nova Odessa'
+};
 
-    const tableSection = document.getElementById('tableSection');
-    const tableBody = document.getElementById('tableBody');
-    const countRegistros = document.getElementById('countRegistros');
-    const btnImprimir = document.getElementById('btnImprimir');
-    const btnLimpar = document.getElementById('btnLimpar');
+document.addEventListener('DOMContentLoaded', () => {
+    const $ = (id) => document.getElementById(id);
+
+    // Formulário do destinatário
+    const arForm = $('arForm');
+    const dest = {
+        cep: $('cep'),
+        nome: $('nome'),
+        endereco: $('endereco'),
+        numero: $('numero'),
+        complemento: $('complemento'),
+        bairro: $('bairro'),
+        uf: $('uf'),
+        cidade: $('cidade')
+    };
+    const observacaoInput = $('observacao');
+
+    // Formulário do remetente
+    const remetenteForm = $('remetenteForm');
+    const rem = {
+        cep: $('remCep'),
+        nome: $('remNome'),
+        endereco: $('remEndereco'),
+        numero: $('remNumero'),
+        complemento: $('remComplemento'),
+        bairro: $('remBairro'),
+        uf: $('remUf'),
+        cidade: $('remCidade')
+    };
+    const btnRestaurarRemetente = $('btnRestaurarRemetente');
+
+    // Tabela e ações
+    const tableSection = $('tableSection');
+    const tableBody = $('tableBody');
+    const countRegistros = $('countRegistros');
+    const btnImprimir = $('btnImprimir');
+    const btnLimpar = $('btnLimpar');
+    const etiquetaRemetenteToggle = $('etiquetaRemetenteToggle');
+    const etiquetaRemetenteState = $('etiquetaRemetenteState');
 
     let registros = [];
     let logoBase64 = null;
 
     loadLogo();
 
-    // 1. MÁSCARAS E VALIDAÇÕES
-    cepInput.addEventListener('input', (e) => {
-        let value = e.target.value.replace(/\D/g, '');
-        if (value.length > 8) value = value.slice(0, 8);
-        if (value.length > 5) {
-            value = value.replace(/^(\d{5})(\d)/, '$1-$2');
-        }
-        e.target.value = value;
+    // 1. ABAS (Destinatário / Remetente)
+    const tabs = Array.from(document.querySelectorAll('.tab-btn'));
+    const tabRemetente = $('tabRemetente');
+    const tabDestinatario = $('tabDestinatario');
+    const panelDestinatario = $('panelDestinatario');
+    const btnIncluir = $('btnIncluir');
+
+    function activateTab(tab, focus = false) {
+        tabs.forEach((t) => {
+            const selected = t === tab;
+            t.setAttribute('aria-selected', String(selected));
+            t.tabIndex = selected ? 0 : -1;
+            $(t.getAttribute('aria-controls')).hidden = !selected;
+        });
+        if (focus) tab.focus();
+    }
+
+    tabs.forEach((tab, i) => {
+        tab.addEventListener('click', () => activateTab(tab));
+        // Navegação por setas, conforme o padrão de acessibilidade de abas
+        tab.addEventListener('keydown', (e) => {
+            if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+            e.preventDefault();
+            const dir = e.key === 'ArrowRight' ? 1 : -1;
+            activateTab(tabs[(i + dir + tabs.length) % tabs.length], true);
+        });
     });
 
-    // CONSULTA VIACEP NO EVENTO BLUR (AO PERDER O FOCO)
-    cepInput.addEventListener('blur', async () => {
-        const cleanCep = cepInput.value.replace(/\D/g, '');
+    // 2. IBGE (UFs e cidades)
+    const cidadesCache = {};
 
-        // Valida se o CEP tem exatamente 8 dígitos
-        if (cleanCep.length !== 8) return;
-
-        try {
-            const res = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`);
-            const data = await res.json();
-
-            // Se o ViaCEP retornar erro (CEP não encontrado), ignora e mantém os campos como estão
-            if (data.erro) {
-                console.warn('CEP não encontrado na base do ViaCEP.');
-                return;
-            }
-
-            // Preenche os campos de endereço e bairro se retornarem dados
-            if (data.logradouro) enderecoInput.value = data.logradouro;
-            if (data.bairro) bairroInput.value = data.bairro;
-
-            // Preenche o complemento se retornado e o campo estiver vazio
-            if (data.complemento && !complementoInput.value) {
-                complementoInput.value = data.complemento;
-            }
-
-            // Seleciona a UF e carrega as cidades correspondentes no <select>
-            if (data.uf) {
-                ufSelect.value = data.uf;
-                // Aguarda o carregamento das cidades da UF vindo da API do IBGE
-                await loadCidadesByUF(data.uf);
-
-                // Seleciona a cidade obtida pelo ViaCEP no <select>
-                if (data.localidade) {
-                    cidadeSelect.value = data.localidade;
-                }
-            }
-
-            nomeInput.focus();
-
-        } catch (err) {
-            console.error('Erro ao consultar o CEP no ViaCEP:', err);
-        }
-    });
-
-    numeroInput.addEventListener('input', (e) => {
-        e.target.value = e.target.value.replace(/\D/g, '').slice(0, 8);
-    });
-
-    // 2. API DO IBGE
-    loadUFs();
+    const ufsReady = loadUFs();
 
     async function loadUFs() {
         try {
             const res = await fetch('https://servicodados.ibge.gov.br/api/v1/localidades/estados?orderBy=nome');
             const ufs = await res.json();
-            ufSelect.innerHTML = '<option value="">Selecione...</option>';
-            ufs.forEach((uf) => {
-                const option = document.createElement('option');
-                option.value = uf.sigla;
-                option.textContent = uf.sigla;
-                ufSelect.appendChild(option);
+            [dest.uf, rem.uf].forEach((select) => {
+                select.innerHTML = '<option value="">Selecione...</option>';
+                ufs.forEach((uf) => {
+                    const option = document.createElement('option');
+                    option.value = uf.sigla;
+                    option.textContent = uf.sigla;
+                    select.appendChild(option);
+                });
             });
         } catch (err) {
             console.error('Erro ao carregar UFs do IBGE:', err);
-            ufSelect.innerHTML = '<option value="">Erro ao carregar</option>';
+            [dest.uf, rem.uf].forEach((select) => {
+                select.innerHTML = '<option value="">Erro ao carregar</option>';
+            });
         }
     }
 
-    // Função assíncrona para buscar e popular as cidades por UF (reutilizável)
-    async function loadCidadesByUF(uf) {
-        cidadeSelect.innerHTML = '<option value="">Carregando...</option>';
-        cidadeSelect.disabled = true;
+    async function fetchCidades(uf) {
+        if (!cidadesCache[uf]) {
+            const res = await fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${uf}/municipios?orderBy=nome`);
+            cidadesCache[uf] = await res.json();
+        }
+        return cidadesCache[uf];
+    }
+
+    // Busca e popula as cidades de uma UF no formulário informado (reutilizável)
+    async function loadCidadesByUF(f, uf) {
+        f.cidade.innerHTML = '<option value="">Carregando...</option>';
+        f.cidade.disabled = true;
 
         if (!uf) {
-            cidadeSelect.innerHTML = '<option value="">Selecione a UF primeiro</option>';
+            f.cidade.innerHTML = '<option value="">Selecione a UF primeiro</option>';
             return;
         }
 
         try {
-            const res = await fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${uf}/municipios?orderBy=nome`);
-            const cidades = await res.json();
-            cidadeSelect.innerHTML = '<option value="">Selecione a cidade...</option>';
+            const cidades = await fetchCidades(uf);
+            f.cidade.innerHTML = '<option value="">Selecione a cidade...</option>';
             cidades.forEach((c) => {
                 const option = document.createElement('option');
                 option.value = c.nome;
                 option.textContent = c.nome;
-                cidadeSelect.appendChild(option);
+                f.cidade.appendChild(option);
             });
-            cidadeSelect.disabled = false;
+            f.cidade.disabled = false;
         } catch (err) {
             console.error('Erro ao carregar cidades:', err);
-            cidadeSelect.innerHTML = '<option value="">Erro ao carregar</option>';
+            f.cidade.innerHTML = '<option value="">Erro ao carregar</option>';
         }
     }
 
-    ufSelect.addEventListener('change', (e) => {
-        loadCidadesByUF(e.target.value);
+    function resetCidade(f) {
+        f.cidade.innerHTML = '<option value="">Selecione a UF primeiro</option>';
+        f.cidade.disabled = true;
+    }
+
+    // 3. MÁSCARAS, VIACEP E UF (compartilhados pelos dois formulários)
+    function setupAddressFields(f) {
+        f.cep.addEventListener('input', (e) => {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 8) value = value.slice(0, 8);
+            if (value.length > 5) {
+                value = value.replace(/^(\d{5})(\d)/, '$1-$2');
+            }
+            e.target.value = value;
+        });
+
+        // Consulta ViaCEP ao perder o foco
+        f.cep.addEventListener('blur', async () => {
+            const cleanCep = f.cep.value.replace(/\D/g, '');
+            if (cleanCep.length !== 8) return;
+
+            try {
+                const res = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`);
+                const data = await res.json();
+
+                if (data.erro) {
+                    console.warn('CEP não encontrado na base do ViaCEP.');
+                    return;
+                }
+
+                if (data.logradouro) f.endereco.value = data.logradouro;
+                if (data.bairro) f.bairro.value = data.bairro;
+
+                if (data.complemento && !f.complemento.value) {
+                    f.complemento.value = data.complemento;
+                }
+
+                if (data.uf) {
+                    f.uf.value = data.uf;
+                    await loadCidadesByUF(f, data.uf);
+                    if (data.localidade) {
+                        f.cidade.value = data.localidade;
+                    }
+                }
+
+                f.nome.focus();
+            } catch (err) {
+                console.error('Erro ao consultar o CEP no ViaCEP:', err);
+            }
+        });
+
+        f.numero.addEventListener('input', (e) => {
+            e.target.value = e.target.value.replace(/\D/g, '').slice(0, 8);
+        });
+
+        f.uf.addEventListener('change', (e) => {
+            loadCidadesByUF(f, e.target.value);
+        });
+    }
+
+    setupAddressFields(dest);
+    setupAddressFields(rem);
+
+    // 4. REMETENTE (valores padrão e leitura dos campos)
+    async function applyRemetentePadrao() {
+        const p = REMETENTE_PADRAO;
+        rem.nome.value = p.nome;
+        rem.cep.value = p.cep;
+        rem.endereco.value = p.endereco;
+        rem.numero.value = p.numero;
+        rem.complemento.value = p.complemento;
+        rem.bairro.value = p.bairro;
+
+        // A UF e a cidade dependem da lista carregada do IBGE
+        await ufsReady;
+        rem.uf.value = p.uf;
+        await loadCidadesByUF(rem, p.uf);
+        rem.cidade.value = p.cidade;
+    }
+
+    function getRemetente() {
+        return {
+            nome: rem.nome.value.trim(),
+            cep: rem.cep.value.trim(),
+            endereco: rem.endereco.value.trim(),
+            numero: rem.numero.value.trim(),
+            complemento: rem.complemento.value.trim(),
+            bairro: rem.bairro.value.trim(),
+            uf: rem.uf.value,
+            cidade: rem.cidade.value
+        };
+    }
+
+    applyRemetentePadrao();
+
+    btnRestaurarRemetente.addEventListener('click', applyRemetentePadrao);
+
+    // Evita o envio do formulário do remetente (ele só alimenta o PDF)
+    remetenteForm.addEventListener('submit', (e) => e.preventDefault());
+
+    // 5. SWITCH DA ETIQUETA DO REMETENTE
+    etiquetaRemetenteToggle.addEventListener('change', () => {
+        etiquetaRemetenteState.textContent = etiquetaRemetenteToggle.checked ? 'Sim' : 'Não';
     });
 
-    // 3. INCLUIR REGISTRO
+    function resetEtiquetaRemetenteToggle() {
+        etiquetaRemetenteToggle.checked = false;
+        etiquetaRemetenteState.textContent = 'Não';
+    }
+
+    // 6. INCLUIR REGISTRO
+    // O botão fica fora das abas. Se estiver na aba Remetente, volta para Destinatário
+    // antes do envio, para que a validação dos campos obrigatórios seja exibida.
+    btnIncluir.addEventListener('click', () => {
+        if (panelDestinatario.hidden) activateTab(tabDestinatario);
+    });
+
     arForm.addEventListener('submit', (e) => {
         e.preventDefault();
 
+        // O remetente vigente é gravado junto com o registro, então precisa estar completo
+        if (!remetenteForm.checkValidity()) {
+            activateTab(tabRemetente);
+            remetenteForm.reportValidity();
+            return;
+        }
+
         const novoRegistro = {
             id: Date.now(),
-            cep: cepInput.value.trim(),
-            nome: nomeInput.value.trim(),
-            endereco: enderecoInput.value.trim(),
-            numero: numeroInput.value.trim(),
-            complemento: complementoInput.value.trim(),
-            bairro: bairroInput.value.trim(),
-            uf: ufSelect.value,
-            cidade: cidadeSelect.value,
-            observacao: observacaoInput.value.trim()
+            cep: dest.cep.value.trim(),
+            nome: dest.nome.value.trim(),
+            endereco: dest.endereco.value.trim(),
+            numero: dest.numero.value.trim(),
+            complemento: dest.complemento.value.trim(),
+            bairro: dest.bairro.value.trim(),
+            uf: dest.uf.value,
+            cidade: dest.cidade.value,
+            observacao: observacaoInput.value.trim(),
+            // Cópia dos dados do remetente no momento da inclusão
+            remetente: getRemetente()
         };
 
         registros.push(novoRegistro);
         renderTable();
 
         arForm.reset();
-        cidadeSelect.innerHTML = '<option value="">Selecione a UF primeiro</option>';
-        cidadeSelect.disabled = true;
-        cepInput.focus();
+        resetCidade(dest);
+        dest.cep.focus();
     });
 
     function renderTable() {
@@ -204,8 +340,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (confirm('Deseja realmente limpar todos os registros cadastrados?')) {
             registros = [];
             arForm.reset();
-            cidadeSelect.innerHTML = '<option value="">Selecione a UF primeiro</option>';
-            cidadeSelect.disabled = true;
+            resetCidade(dest);
+            resetEtiquetaRemetenteToggle();
             renderTable();
         }
     });
@@ -229,7 +365,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     btnImprimir.addEventListener('click', () => {
         if (registros.length === 0) return;
-        generatePdfComARsEEtiquetas(registros, logoBase64);
+
+        generatePdfComARsEEtiquetas(
+            registros,
+            etiquetaRemetenteToggle.checked,
+            logoBase64
+        );
     });
 
     function escapeHtml(str) {
@@ -237,7 +378,19 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-function generatePdfComARsEEtiquetas(registros, logoBase64) {
+// Escreve uma linha de texto reduzindo a fonte até caber na largura máxima
+function drawFittedText(doc, text, x, y, maxWidth, baseSize, minSize = 4.5) {
+    let size = baseSize;
+    doc.setFontSize(size);
+    while (size > minSize && doc.getTextWidth(text) > maxWidth) {
+        size -= 0.25;
+        doc.setFontSize(size);
+    }
+    doc.text(text, x, y);
+    doc.setFontSize(baseSize);
+}
+
+function generatePdfComARsEEtiquetas(registros, incluirEtiquetaRemetente, logoBase64) {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF({
         orientation: 'p',
@@ -263,8 +416,17 @@ function generatePdfComARsEEtiquetas(registros, logoBase64) {
     });
 
     // --- 2. GERAÇÃO DAS ETIQUETAS (Em página separada) ---
-    // Adiciona uma nova página obrigatoriamente para as etiquetas
     doc.addPage();
+
+    // Monta a lista de etiquetas: destinatário e, se ativado, remetente logo em seguida.
+    // Com duas colunas, cada par fica lado a lado na mesma linha.
+    const etiquetas = [];
+    registros.forEach((item) => {
+        etiquetas.push({ data: item, titulo: 'DESTINATÁRIO' });
+        if (incluirEtiquetaRemetente) {
+            etiquetas.push({ data: item.remetente, titulo: 'REMETENTE' });
+        }
+    });
 
     // Parâmetros da etiqueta e grade A4
     const eWidth = 98;
@@ -276,7 +438,7 @@ function generatePdfComARsEEtiquetas(registros, logoBase64) {
     const maxRows = 4;
     const itemsPerPage = maxCols * maxRows; // 8 etiquetas por página
 
-    registros.forEach((item, index) => {
+    etiquetas.forEach((etiqueta, index) => {
         const pageIndex = index % itemsPerPage;
 
         // Se passar de 8 etiquetas, cria uma nova página
@@ -290,7 +452,7 @@ function generatePdfComARsEEtiquetas(registros, logoBase64) {
         const posX = marginX + (col * eWidth);
         const posY = marginY + (row * eHeight);
 
-        drawSingleLabel(doc, posX, posY, eWidth, eHeight, item, logoBase64);
+        drawSingleLabel(doc, posX, posY, eWidth, eHeight, etiqueta.data, logoBase64, etiqueta.titulo);
     });
 
     const timestamp = new Date().toISOString().replace(/[-:T.]/g, '').slice(0, 14);
@@ -298,6 +460,9 @@ function generatePdfComARsEEtiquetas(registros, logoBase64) {
 }
 
 function drawSingleAR(doc, x, y, w, h, data, logoBase64) {
+    // Remetente gravado no registro no momento da inclusão
+    const remetente = data.remetente;
+
     doc.setLineWidth(0.35);
     doc.setDrawColor(0);
 
@@ -350,6 +515,9 @@ function drawSingleAR(doc, x, y, w, h, data, logoBase64) {
     const yDestDevEnd = y + hHeader + hDestDev;
     doc.line(x + leftColW, yDestDevEnd, x + w, yDestDevEnd); // Linha debaixo do corpo central
 
+    // Largura útil do texto (do início do texto até a coluna direita)
+    const textMaxW = 94;
+
     // Destinatário
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(6);
@@ -357,7 +525,7 @@ function drawSingleAR(doc, x, y, w, h, data, logoBase64) {
 
     doc.setFont('helvetica', 'normal');
     let nextY = y + 14;
-    doc.text(data.nome.toUpperCase(), x + 10, nextY);
+    drawFittedText(doc, data.nome.toUpperCase(), x + 10, nextY, textMaxW, 6);
     nextY += 2.5;
     doc.text(`${data.endereco.toUpperCase()}, ${data.numero}`, x + 10, nextY);
     nextY += 2.5;
@@ -376,16 +544,25 @@ function drawSingleAR(doc, x, y, w, h, data, logoBase64) {
     doc.setFontSize(5);
     doc.text('(CÓDIGO DE BARRAS OU Nº DE REGISTRO DO OBJETO)', x + 30, y + 32.5);
 
-    // Endereço para Devolução do AR
+    // Endereço para Devolução do AR (dados vindos da aba "Remetente")
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(6);
     doc.text('ENDEREÇO PARA DEVOLUÇÃO DO AR', x + 10, y + 40);
 
     doc.setFont('helvetica', 'normal');
-    doc.text('Município de Nova Odessa - Setor de Tributação e Dívida Ativa'.toUpperCase(), x + 10, y + 42.5);
-    doc.text('Avenida João Pessoa, 777'.toUpperCase(), x + 10, y + 45);
-    doc.text('Centro'.toUpperCase(), x + 10, y + 47.5);
-    doc.text('13380-017 - Nova Odessa - SP'.toUpperCase(), x + 10, y + 50);
+    doc.setFontSize(6);
+    // O complemento, se houver, segue na mesma linha da rua para caber nas 4 linhas do quadro
+    const remRua =
+        `${remetente.endereco}, ${remetente.numero}` +
+        (remetente.complemento ? ` - ${remetente.complemento}` : '');
+    drawFittedText(doc, remetente.nome.toUpperCase(), x + 10, y + 42.5, textMaxW, 6);
+    drawFittedText(doc, remRua.toUpperCase(), x + 10, y + 45, textMaxW, 6);
+    doc.text(remetente.bairro.toUpperCase(), x + 10, y + 47.5);
+    doc.text(
+        `${remetente.cep} - ${remetente.cidade.toUpperCase()} - ${remetente.uf.toUpperCase()}`,
+        x + 10,
+        y + 50
+    );
 
     // Divisões da Coluna Direita (Unidade de Postagem & Carimbo)
     const yUnidPostagem = y + 8;
@@ -496,7 +673,10 @@ function drawSingleAR(doc, x, y, w, h, data, logoBase64) {
     doc.text('Nº DOC. DE IDENTIDADE', rightColX + 0.7, yNome + 2.5);
 }
 
-function drawSingleLabel(doc, x, y, w, h, data, logoBase64) {
+// Desenha uma etiqueta. O parâmetro "titulo" define a tag preta
+// ("DESTINATÁRIO" por padrão, ou "REMETENTE").
+function drawSingleLabel(doc, x, y, w, h, data, logoBase64, titulo = 'DESTINATÁRIO') {
+    const espacoTitulo = titulo === 'DESTINATÁRIO' ? 5.5 : 7.5;
     doc.setLineWidth(0.35);
     doc.setDrawColor(0);
 
@@ -504,14 +684,14 @@ function drawSingleLabel(doc, x, y, w, h, data, logoBase64) {
     doc.rect(x, y, w - 2, h - 2);
 
     // --- CABEÇALHO ---
-    // Tag preta "DESTINATÁRIO"
+    // Tag preta com o título
     doc.setFillColor(0, 0, 0);
     doc.rect(x, y, 35, 5.5, 'F');
 
     doc.setTextColor(255, 255, 255);
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(9);
-    doc.text('DESTINATÁRIO', x + 5.5, y + 4);
+    doc.text(titulo, x + espacoTitulo, y + 4);
 
     // Logo Correios na direita
     doc.setTextColor(0, 0, 0);
@@ -523,12 +703,12 @@ function drawSingleLabel(doc, x, y, w, h, data, logoBase64) {
         doc.text('Correios', x + w - 15, y + 4);
     }
 
-    // --- DADOS DO DESTINATÁRIO ---
+    // --- DADOS ---
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(6.5);
 
     let nextY = y + 8;
-    doc.text(data.nome, x + 2, nextY);
+    drawFittedText(doc, data.nome, x + 2, nextY, 90, 6.5);
     nextY += 3;
     doc.text(`${data.endereco}, ${data.numero}`, x + 2, nextY);
     nextY += 3;
@@ -539,7 +719,6 @@ function drawSingleLabel(doc, x, y, w, h, data, logoBase64) {
         doc.text(data.bairro, x + 2, nextY);
     } else {
         doc.text(data.bairro, x + 2, nextY);
-        doc.text(" ", x + 2, nextY);
         nextY += 3;
     }
 
@@ -572,7 +751,7 @@ function drawSingleLabel(doc, x, y, w, h, data, logoBase64) {
         }
     }
 
-    // --- SEÇÃO OBSERVAÇÃO ---
+    // --- SEÇÃO OBSERVAÇÃO (apenas etiquetas de destinatário com observação) ---
     if (data.observacao) {
         const obsX = x + 55;
         const obsY = y + 26;
