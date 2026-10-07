@@ -1,20 +1,30 @@
 /* css/index.css */
 
-.grid-container {
-	display: grid;
-	gap: 16px;
-	grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+/* Grade de utilitários: flexbox para centralizar a última linha,
+   com largura e altura fixas para que todos os cards fiquem iguais. */
+.tool-grid {
+	--gap: 16px;
+	--cols: 2;
+	--card-height: 170px;
+
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: var(--gap);
 	width: 92%;
 	max-width: 900px;
-	align-content: start;
 	padding: 20px 0;
 }
 
-.grid-btn {
+.tool-card {
 	position: relative;
+	flex: 0 0 auto;
+	width: calc((100% - (var(--cols) - 1) * var(--gap)) / var(--cols));
+	height: var(--card-height);
+	min-width: 0;
 	background-color: var(--bg-card);
 	color: var(--text-primary);
-	padding: 28px 16px 22px;
+	padding: 24px 12px 20px;
 	border-radius: var(--radius-lg);
 	text-decoration: none;
 	transition:
@@ -26,14 +36,13 @@
 	align-items: center;
 	justify-content: center;
 	gap: 12px;
-	min-height: 150px;
 	border: 1px solid var(--border-color);
 	box-shadow: var(--shadow-sm);
 }
 
 /* Marcas de canto em "esquadro de prancheta" — o elemento de assinatura da página */
-.grid-btn::before,
-.grid-btn::after {
+.tool-card::before,
+.tool-card::after {
 	content: '';
 	position: absolute;
 	width: 14px;
@@ -43,7 +52,7 @@
 	transition: opacity var(--transition-fast);
 }
 
-.grid-btn::before {
+.tool-card::before {
 	top: 9px;
 	left: 9px;
 	border-right: none;
@@ -51,7 +60,7 @@
 	border-radius: 3px 0 0 0;
 }
 
-.grid-btn::after {
+.tool-card::after {
 	bottom: 9px;
 	right: 9px;
 	border-left: none;
@@ -59,19 +68,19 @@
 	border-radius: 0 0 3px 0;
 }
 
-.grid-btn:hover {
-	opacity: 1;
+.tool-card:hover {
 	transform: translateY(-4px);
 	box-shadow: var(--shadow-md);
 	border-color: var(--accent);
 }
 
-.grid-btn:hover::before,
-.grid-btn:hover::after {
+.tool-card:hover::before,
+.tool-card:hover::after {
 	opacity: 1;
 }
 
-.grid-btn i {
+.tool-card i {
+	flex-shrink: 0;
 	font-size: 1.6em;
 	width: 56px;
 	height: 56px;
@@ -86,27 +95,24 @@
 		color var(--transition-fast);
 }
 
-.grid-btn:hover i {
+.tool-card:hover i {
 	background-color: var(--accent);
 	color: #ffffff;
 }
 
-.grid-btn span {
+.tool-card span {
 	font-family: var(--font-display);
 	font-size: 0.92em;
 	font-weight: 600;
 	letter-spacing: 0.01em;
+	line-height: 1.25;
+	text-align: center;
+	overflow-wrap: anywhere;
 }
 
-/* Responsividade exclusiva da grade da Home */
-@media (min-width: 600px) {
-	.grid-container {
-		grid-template-columns: repeat(2, 1fr);
-	}
-}
-
+/* Telas largas: 4 colunas. A largura de cada card é recalculada pela variável. */
 @media (min-width: 900px) {
-	.grid-container {
-		grid-template-columns: repeat(4, 1fr);
+	.tool-grid {
+		--cols: 4;
 	}
 }

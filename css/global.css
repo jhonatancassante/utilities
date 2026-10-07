@@ -223,13 +223,12 @@ header {
 	justify-content: center;
 	gap: 15px;
 	color: var(--header-text);
-	position: relative;
 }
 
 .back-btn {
 	color: #fff;
 	position: absolute;
-	left: 0;
+	left: 20px;
 	text-decoration: none;
 	transition:
 		transform var(--transition-fast),
@@ -262,7 +261,7 @@ header h1 {
 /* Botão Alternar Tema */
 .theme-toggle-btn {
 	position: absolute;
-	right: 0;
+	right: 20px;
 	background: transparent;
 	border: none;
 	color: var(--header-text);
