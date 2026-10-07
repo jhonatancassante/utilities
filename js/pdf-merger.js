@@ -1,9 +1,17 @@
 const fileLabel = document.getElementById('file-label');
 const status = document.getElementById('status');
 const btnGroup = document.getElementById('btnGroup');
+const optionsGroup = document.getElementById('optionsGroup');
+const blankPageToggle = document.getElementById('blankPageToggle');
+const blankPageState = document.getElementById('blankPageState');
 let selectedFiles = [];
 
 const DEFAULT_LABEL = 'Clique ou arraste seus arquivos PDF aqui (múltiplos arquivos)';
+
+// Atualiza o texto ao lado do switch
+blankPageToggle.addEventListener('change', () => {
+    blankPageState.textContent = blankPageToggle.checked ? 'Sim' : 'Não';
+});
 
 // Inicializa a área de drag & drop reutilizando o global.js
 setupUploadSection('drop-zone', 'pdfInput', function (files) {
@@ -31,18 +39,21 @@ setupUploadSection('drop-zone', 'pdfInput', function (files) {
     updateUI();
 });
 
-// Atualiza a interface (oculta botões se houver menos de 2 arquivos)
+// Atualiza a interface (oculta botões e opções se houver menos de 2 arquivos)
 function updateUI() {
     if (selectedFiles.length === 0) {
         fileLabel.textContent = DEFAULT_LABEL;
         if (btnGroup) btnGroup.style.display = 'none';
+        if (optionsGroup) optionsGroup.style.display = 'none';
     } else {
-        // O grupo de botões só fica visível se houver pelo menos 2 PDFs
+        // Botões e opção só ficam visíveis se houver pelo menos 2 PDFs
         if (selectedFiles.length >= 2) {
             if (btnGroup) btnGroup.style.display = 'flex';
+            if (optionsGroup) optionsGroup.style.display = 'flex';
             status.textContent = '';
         } else {
             if (btnGroup) btnGroup.style.display = 'none';
+            if (optionsGroup) optionsGroup.style.display = 'none';
             status.textContent = 'Aviso: Selecione pelo menos 2 arquivos PDF para unificar.';
             status.style.color = '#e67e22'; // Laranja de aviso
         }
@@ -59,6 +70,8 @@ function clearFiles() {
     selectedFiles = [];
     const pdfInput = document.getElementById('pdfInput');
     if (pdfInput) pdfInput.value = '';
+    blankPageToggle.checked = true;
+    blankPageState.textContent = 'Sim';
     status.textContent = '';
     updateUI();
 }
@@ -84,6 +97,7 @@ async function mergePDFs() {
 
         // 2. Criação do PDF consolidado final
         const mergedPdf = await PDFLib.PDFDocument.create();
+        const addBlankPage = blankPageToggle.checked;
 
         for (const file of sortedFiles) {
             const arrayBuffer = await file.arrayBuffer();
@@ -95,8 +109,8 @@ async function mergePDFs() {
 
             copiedPages.forEach((page) => mergedPdf.addPage(page));
 
-            // Paridade: se ímpar, adiciona página em branco
-            if (pageCount % 2 !== 0) {
+            // Paridade: se ativado e o total for ímpar, adiciona página em branco
+            if (addBlankPage && pageCount % 2 !== 0) {
                 const lastPage = copiedPages[copiedPages.length - 1];
                 const { width, height } = lastPage.getSize();
                 mergedPdf.addPage([width, height]);
