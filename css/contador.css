@@ -1,0 +1,228 @@
+/* css/contador.css */
+
+.countdown-card {
+	position: relative;
+	padding: 36px 24px 32px;
+	overflow: hidden;
+}
+
+/* Marcas de canto em "esquadro de prancheta", assinatura visual do site */
+.countdown-card::before,
+.countdown-card::after {
+	content: '';
+	position: absolute;
+	width: 22px;
+	height: 22px;
+	border: 2px solid var(--accent);
+	opacity: 0.55;
+	pointer-events: none;
+}
+
+.countdown-card::before {
+	top: 12px;
+	left: 12px;
+	border-right: none;
+	border-bottom: none;
+	border-radius: 4px 0 0 0;
+}
+
+.countdown-card::after {
+	bottom: 12px;
+	right: 12px;
+	border-left: none;
+	border-top: none;
+	border-radius: 0 0 4px 0;
+}
+
+.countdown-eyebrow {
+	margin: 0 0 6px;
+	font-family: var(--font-mono);
+	font-size: 0.78rem;
+	letter-spacing: 0.18em;
+	text-transform: uppercase;
+	color: var(--accent);
+}
+
+.countdown-title {
+	margin: 0 0 18px;
+	font-size: clamp(1.5rem, 4vw + 0.8rem, 2.3rem);
+	line-height: 1.15;
+	overflow-wrap: anywhere;
+}
+
+/* Data e hora do evento */
+.event-meta {
+	display: flex;
+	justify-content: center;
+	flex-wrap: wrap;
+	gap: 10px;
+	margin-bottom: 28px;
+}
+
+.event-chip {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding: 6px 14px;
+	border-radius: 999px;
+	background-color: var(--accent-soft);
+	color: var(--accent);
+	font-family: var(--font-mono);
+	font-size: 0.9rem;
+	font-weight: 500;
+}
+
+.event-chip i {
+	font-size: 0.85em;
+}
+
+/* Blocos do contador */
+.countdown-grid {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: 12px;
+}
+
+.time-tile {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 6px;
+	padding: 20px 6px 14px;
+	background-color: var(--bg-elevated);
+	border: 1px solid var(--border-color);
+	border-radius: var(--radius-md);
+	box-shadow: var(--shadow-sm);
+	overflow: hidden;
+}
+
+/* Filete de destaque no topo de cada bloco */
+.time-tile::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 3px;
+	background: linear-gradient(
+		90deg,
+		var(--header-grad-start),
+		var(--header-grad-end)
+	);
+}
+
+.time-value {
+	font-family: var(--font-mono);
+	font-weight: 500;
+	font-size: clamp(1.9rem, 6vw, 3.2rem);
+	line-height: 1;
+	color: var(--text-primary);
+	font-variant-numeric: tabular-nums;
+	letter-spacing: -0.02em;
+}
+
+.time-label {
+	font-family: var(--font-display);
+	font-size: 0.72rem;
+	font-weight: 600;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	color: var(--text-secondary);
+}
+
+/* O bloco dos segundos ganha cor de destaque e um pulso discreto */
+.time-tile-live {
+	border-color: var(--accent);
+}
+
+.time-tile-live .time-value {
+	color: var(--accent);
+}
+
+.time-tile-live::after {
+	content: '';
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	width: 7px;
+	height: 7px;
+	border-radius: 50%;
+	background-color: var(--success);
+	animation: countdown-pulse 1s ease-in-out infinite;
+}
+
+@keyframes countdown-pulse {
+	0%,
+	100% {
+		opacity: 1;
+		transform: scale(1);
+	}
+	50% {
+		opacity: 0.3;
+		transform: scale(0.7);
+	}
+}
+
+/* Pequeno "pulo" ao trocar o número dos segundos */
+.time-value.tick {
+	animation: countdown-tick 0.35s ease-out;
+}
+
+@keyframes countdown-tick {
+	from {
+		transform: translateY(-6px);
+		opacity: 0.4;
+	}
+	to {
+		transform: translateY(0);
+		opacity: 1;
+	}
+}
+
+.countdown-summary {
+	margin: 24px 0 0;
+	font-size: 0.95rem;
+	color: var(--text-secondary);
+}
+
+/* Estado após o início do evento */
+.event-started {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+	margin-top: 24px;
+	padding: 14px 16px;
+	border: 1px solid var(--success);
+	border-radius: var(--radius-md);
+	background-color: var(--success-soft);
+	color: var(--success);
+	font-family: var(--font-display);
+	font-size: 1.1rem;
+}
+
+.event-started[hidden] {
+	display: none;
+}
+
+.countdown-card.is-finished .time-tile-live::after {
+	animation: none;
+	background-color: var(--text-secondary);
+}
+
+/* Telas estreitas: 2 x 2 */
+@media (max-width: 480px) {
+	.countdown-card {
+		padding: 32px 16px 28px;
+	}
+
+	.countdown-grid {
+		grid-template-columns: repeat(2, 1fr);
+	}
+
+	.time-value {
+		font-size: clamp(2.2rem, 12vw, 3rem);
+	}
+}
