@@ -5,10 +5,10 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<meta
 			name="description"
-			content="Converta qualquer arquivo JSON em CSV, escolhendo colunas, delimitador e codificação de saída."
+			content="Você está sendo redirecionado para a ferramenta de conversão de JSON para CSV."
 		/>
 		<meta name="theme-color" content="#16305a" />
-		<title>De JSON para CSV</title>
+		<title>Redirecionando - De JSON para CSV</title>
 		<script>
 			(function () {
 				const theme = localStorage.getItem('theme') || 'light';
@@ -21,9 +21,29 @@
 			sizes="180x180"
 			href="../assets/apple-touch-icon.png"
 		/>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 		<script src="../js/global.js" defer></script>
-		<script src="../js/json-to-csv.js" defer></script>
+		<script>
+			document.addEventListener('DOMContentLoaded', function () {
+				const targetUrl = 'https://jhonatancassante.com.br/tools/json-para-csv';
+				let countdown = 5; // Tempo em segundos antes do redirecionamento
+
+				const countdownEl = document.getElementById('countdown');
+				const redirectLinkEl = document.getElementById('redirect-link');
+
+				redirectLinkEl.href = targetUrl;
+
+				const timer = setInterval(function () {
+					countdown--;
+					if (countdownEl) {
+						countdownEl.textContent = countdown;
+					}
+					if (countdown <= 0) {
+						clearInterval(timer);
+						window.location.href = targetUrl;
+					}
+				}, 1000);
+			});
+		</script>
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 		<link
@@ -31,7 +51,47 @@
 			href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
 		/>
 		<link rel="stylesheet" href="../css/global.css" />
-		<link rel="stylesheet" href="../css/json-to-csv.css" />
+		<style>
+			.redirect-box {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: center;
+				gap: 20px;
+				padding: 40px 20px;
+				text-align: center;
+			}
+			.redirect-box i {
+				font-size: 3rem;
+				color: var(--accent);
+			}
+			.redirect-box p {
+				font-size: 1.1rem;
+				color: var(--text-secondary);
+				line-height: 1.5;
+				margin: 0;
+			}
+			.redirect-box a.btn-redirect {
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				gap: 10px;
+				background-color: var(--accent);
+				color: #ffffff;
+				text-decoration: none;
+				padding: 12px 24px;
+				border-radius: var(--radius-md);
+				font-weight: 600;
+				font-size: 16px;
+				transition:
+					background-color var(--transition-fast),
+					transform var(--transition-fast);
+			}
+			.redirect-box a.btn-redirect:hover {
+				background-color: var(--accent-hover);
+				transform: translateY(-2px);
+			}
+		</style>
 	</head>
 	<body>
 		<header>
@@ -59,96 +119,18 @@
 
 		<main>
 			<div class="content-wrapper">
-				<h1>
-					De JSON para CSV
-					<i
-						id="helpInfo"
-						class="fas fa-question-circle"
-						onclick="toggleInfoBox()"
-						title="Clique aqui para obter mais informações."
-					></i>
-				</h1>
-
-				<div class="info-box" id="infoBox">
-					<strong>Como funciona:</strong> envie um arquivo JSON contendo uma
-					lista de objetos (ou um único objeto). Escolha quais campos viram
-					colunas, o delimitador e a codificação de saída. O CSV é gerado
-					automaticamente e pode ser copiado ou baixado. Valores que forem
-					objetos ou listas são convertidos em texto na célula.
-				</div>
-
-				<div
-					class="upload-section"
-					id="drop-zone"
-					tabindex="0"
-					role="button"
-					aria-label="Clique ou arraste o arquivo JSON para enviar"
-				>
-					<span id="file-label">Clique ou arraste o arquivo JSON aqui</span>
-					<input type="file" id="jsonFile" accept=".json" />
-				</div>
-
-				<div id="errorMessage" class="error" aria-live="assertive"></div>
-
-				<div id="configPanel" class="config-panel" style="display: none">
-					<div class="settings-row">
-						<div class="setting-field">
-							<label for="delimiterSelect">Delimitador de saída</label>
-							<select id="delimiterSelect">
-								<option value=";">Ponto e vírgula ( ; )</option>
-								<option value=",">Vírgula ( , )</option>
-								<option value="\t">Tabulação</option>
-							</select>
-						</div>
-						<div class="setting-field">
-							<label for="encodingSelect">Codificação de saída</label>
-							<select id="encodingSelect">
-								<option value="utf8-bom">
-									UTF-8 com BOM (recomendado para abrir no Excel)
-								</option>
-								<option value="utf8">UTF-8</option>
-								<option value="latin1">ISO-8859-1 / Latin1</option>
-							</select>
-						</div>
-					</div>
-
-					<div class="setting-block">
-						<div class="columns-header">
-							<label>Colunas a incluir no CSV</label>
-							<div class="select-group">
-								<button type="button" id="selectAllColsBtn" class="link-btn">
-									Selecionar todas
-								</button>
-								<button type="button" id="selectNoneColsBtn" class="link-btn">
-									Limpar seleção
-								</button>
-							</div>
-						</div>
-						<div id="columnsGrid" class="columns-grid"></div>
-					</div>
-				</div>
-
-				<div class="json-container">
-					<h3>Resultado do CSV:</h3>
-					<button
-						id="copyBtn"
-						class="copy-btn"
-						title="Copiar código"
-						aria-label="Copiar conteúdo CSV"
-						style="display: none"
-					>
-						<i class="fa-regular fa-copy"></i>
-					</button>
-					<pre><code id="csvOutput">O resultado aparecerá aqui após o envio do arquivo...</code></pre>
-				</div>
-
-				<div id="btnGroup" class="btn-group" style="display: none">
-					<button id="downloadBtn">
-						<i class="fas fa-download"></i> Baixar CSV
-					</button>
-					<button id="clearBtn" class="btn-danger" onclick="clearFiles()">
-						<i class="fas fa-trash-alt"></i> Limpar
-					</button>
+				<div class="redirect-box">
+					<i class="fas fa-external-link-alt"></i>
+					<h1>
+						Você será redirecionado em <span id="countdown">5</span> segundos...
+					</h1>
+					<p>
+						Estamos direcionando você para a nova versão da ferramenta em nosso
+						site oficial.
+					</p>
+					<a id="redirect-link" href="#" class="btn-redirect">
+						<i class="fas fa-arrow-right"></i> Ir agora para a ferramenta
+					</a>
 				</div>
 			</div>
 		</main>
