@@ -5,10 +5,10 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<meta
 			name="description"
-			content="Converte relatórios TXT com colunas de largura fixa em arquivo CSV."
+			content="Você está sendo redirecionado para a ferramenta de conversão de TXT para CSV."
 		/>
 		<meta name="theme-color" content="#16305a" />
-		<title>De TXT para CSV</title>
+		<title>Redirecionando - De TXT para CSV</title>
 		<script>
 			(function () {
 				const theme = localStorage.getItem('theme') || 'light';
@@ -22,7 +22,28 @@
 			href="../assets/apple-touch-icon.png"
 		/>
 		<script src="../js/global.js" defer></script>
-		<script src="../js/txt-to-csv.js" defer></script>
+		<script>
+			document.addEventListener('DOMContentLoaded', function () {
+				const targetUrl = 'https://jhonatancassante.com.br/tools/txt-para-csv';
+				let countdown = 5; // Tempo em segundos antes do redirecionamento
+
+				const countdownEl = document.getElementById('countdown');
+				const redirectLinkEl = document.getElementById('redirect-link');
+
+				redirectLinkEl.href = targetUrl;
+
+				const timer = setInterval(function () {
+					countdown--;
+					if (countdownEl) {
+						countdownEl.textContent = countdown;
+					}
+					if (countdown <= 0) {
+						clearInterval(timer);
+						window.location.href = targetUrl;
+					}
+				}, 1000);
+			});
+		</script>
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 		<link
@@ -30,7 +51,47 @@
 			href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
 		/>
 		<link rel="stylesheet" href="../css/global.css" />
-		<link rel="stylesheet" href="../css/txt-to-csv.css" />
+		<style>
+			.redirect-box {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: center;
+				gap: 20px;
+				padding: 40px 20px;
+				text-align: center;
+			}
+			.redirect-box i {
+				font-size: 3rem;
+				color: var(--accent);
+			}
+			.redirect-box p {
+				font-size: 1.1rem;
+				color: var(--text-secondary);
+				line-height: 1.5;
+				margin: 0;
+			}
+			.redirect-box a.btn-redirect {
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				gap: 10px;
+				background-color: var(--accent);
+				color: #ffffff;
+				text-decoration: none;
+				padding: 12px 24px;
+				border-radius: var(--radius-md);
+				font-weight: 600;
+				font-size: 16px;
+				transition:
+					background-color var(--transition-fast),
+					transform var(--transition-fast);
+			}
+			.redirect-box a.btn-redirect:hover {
+				background-color: var(--accent-hover);
+				transform: translateY(-2px);
+			}
+		</style>
 	</head>
 	<body>
 		<header>
@@ -58,125 +119,18 @@
 
 		<main>
 			<div class="content-wrapper">
-				<h1>
-					De TXT para CSV
-					<i
-						id="helpInfo"
-						class="fas fa-question-circle"
-						onclick="toggleInfoBox()"
-						title="Clique aqui para obter mais informações."
-					></i>
-				</h1>
-
-				<div class="info-box" id="infoBox">
-					<strong>Como funciona:</strong> envie um relatório
-					<strong>.txt</strong> com colunas de largura fixa. A primeira linha
-					pode ser só um título (ex.: <em>REFISNO Relatório</em>) ou já trazer
-					as colunas; se houver título, as colunas devem estar na segunda linha.
-				</div>
-
-				<div
-					class="upload-section"
-					id="t2cDropzone"
-					tabindex="0"
-					role="button"
-					aria-label="Clique ou arraste o arquivo TXT aqui"
-				>
-					<span id="t2cFileName">Clique ou arraste o arquivo TXT aqui</span>
-					<input type="file" id="t2cFile" accept=".txt,text/plain" />
-				</div>
-
-				<div
-					id="t2cError"
-					class="error"
-					aria-live="assertive"
-					style="display: none"
-				></div>
-
-				<div class="config-panel" id="configPanel">
-					<div class="settings-row">
-						<div class="setting-field">
-							<label for="t2cSeparator">Separador do CSV</label>
-							<select id="t2cSeparator">
-								<option value=";" selected>
-									Ponto e vírgula (;) — Excel pt-BR
-								</option>
-								<option value=",">Vírgula (,)</option>
-								<option value="tab">Tabulação</option>
-							</select>
-						</div>
-					</div>
-
-					<div class="setting-block">
-						<label>Opções de conversão</label>
-						<div class="switches-container">
-							<!-- Switch 1: BOM UTF-8 -->
-							<label class="switch-row" for="t2cBom">
-								<span class="switch-text"
-									>Incluir BOM UTF-8 (acentos corretos no Excel)</span
-								>
-								<span class="switch">
-									<input type="checkbox" id="t2cBom" role="switch" checked />
-									<span class="slider"></span>
-								</span>
-								<span class="switch-state" id="t2cBomState">Sim</span>
-							</label>
-
-							<!-- Switch 2: Apenas Data -->
-							<label class="switch-row" for="t2cDateOnly">
-								<span class="switch-text"
-									>Exibir só a data, sem a hora (26/10/2026 00:00:00 →
-									26/10/2026)</span
-								>
-								<span class="switch">
-									<input
-										type="checkbox"
-										id="t2cDateOnly"
-										role="switch"
-										checked
-									/>
-									<span class="slider"></span>
-								</span>
-								<span class="switch-state" id="t2cDateOnlyState">Sim</span>
-							</label>
-
-							<!-- Switch 3: Ponto Decimal -->
-							<label class="switch-row" for="t2cDecimalDot">
-								<span class="switch-text"
-									>Trocar vírgula decimal por ponto (1234,56 → 1234.56)</span
-								>
-								<span class="switch">
-									<input type="checkbox" id="t2cDecimalDot" role="switch" />
-									<span class="slider"></span>
-								</span>
-								<span class="switch-state" id="t2cDecimalDotState">Não</span>
-							</label>
-						</div>
-					</div>
-				</div>
-
-				<div id="t2cResult" style="display: none; margin-top: 20px">
-					<p class="status-msg" id="t2cStats"></p>
-					<p class="error" id="t2cWarning" style="display: none"></p>
-
-					<div class="t2c-table-wrap" style="margin-top: 15px">
-						<table class="t2c-table">
-							<thead id="t2cPreviewHead"></thead>
-							<tbody id="t2cPreviewBody"></tbody>
-						</table>
-					</div>
-					<p class="setting-hint" style="margin-top: 8px; text-align: left">
-						Prévia das primeiras 15 linhas.
+				<div class="redirect-box">
+					<i class="fas fa-external-link-alt"></i>
+					<h1>
+						Você será redirecionado em <span id="countdown">5</span> segundos...
+					</h1>
+					<p>
+						Estamos direcionando você para a nova versão da ferramenta em nosso
+						site oficial.
 					</p>
-
-					<div class="btn-group action-buttons" style="margin-top: 20px">
-						<button type="button" id="t2cDownload">
-							<i class="fas fa-download"></i> Baixar CSV
-						</button>
-						<button type="button" class="btn-danger" id="t2cReset">
-							<i class="fas fa-trash-alt"></i> Limpar
-						</button>
-					</div>
+					<a id="redirect-link" href="#" class="btn-redirect">
+						<i class="fas fa-arrow-right"></i> Ir agora para a ferramenta
+					</a>
 				</div>
 			</div>
 		</main>
