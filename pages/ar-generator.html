@@ -1,5 +1,3 @@
-<!-- pages/ar-generator.html -->
-
 <!doctype html>
 <html lang="pt-BR">
 	<head>
@@ -7,10 +5,10 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<meta
 			name="description"
-			content="Gerador de Aviso de Recebimento (AR) dos Correios para emissão e impressão rápida."
+			content="Você está sendo redirecionado para a nova ferramenta de Gerador de AR."
 		/>
 		<meta name="theme-color" content="#16305a" />
-		<title>Gerador de AR - Utilitários</title>
+		<title>Redirecionando - Gerador de AR</title>
 		<script>
 			(function () {
 				const theme = localStorage.getItem('theme') || 'light';
@@ -23,6 +21,29 @@
 			sizes="180x180"
 			href="../assets/apple-touch-icon.png"
 		/>
+		<script src="../js/global.js" defer></script>
+		<script>
+			document.addEventListener('DOMContentLoaded', function () {
+				const targetUrl = 'https://jhonatancassante.com.br/tools/ar-generator';
+				let countdown = 5; // Tempo em segundos antes do redirecionamento
+
+				const countdownEl = document.getElementById('countdown');
+				const redirectLinkEl = document.getElementById('redirect-link');
+
+				redirectLinkEl.href = targetUrl;
+
+				const timer = setInterval(function () {
+					countdown--;
+					if (countdownEl) {
+						countdownEl.textContent = countdown;
+					}
+					if (countdown <= 0) {
+						clearInterval(timer);
+						window.location.href = targetUrl;
+					}
+				}, 1000);
+			});
+		</script>
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 		<link
@@ -30,13 +51,60 @@
 			href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
 		/>
 		<link rel="stylesheet" href="../css/global.css" />
-		<link rel="stylesheet" href="../css/ar-generator.css" />
-		<!-- Lib jsPDF para geração client-side do PDF -->
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-		<!-- Lib JsBarcode para geração do Código de Barras do CEP -->
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.5/JsBarcode.all.min.js"></script>
-		<script src="../js/global.js" defer></script>
-		<script src="../js/ar-generator.js" defer></script>
+		<style>
+			.redirect-box {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: center;
+				gap: 20px;
+				padding: 40px 20px;
+				text-align: center;
+			}
+			.redirect-box i {
+				font-size: 3rem;
+				color: var(--accent);
+			}
+			.redirect-box p {
+				font-size: 1.1rem;
+				color: var(--text-secondary);
+				line-height: 1.5;
+				margin: 0;
+			}
+			.redirect-box a.btn-redirect {
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				gap: 10px;
+				background-color: var(--accent);
+				color: #ffffff;
+				text-decoration: none;
+				padding: 12px 24px;
+				border-radius: var(--radius-md);
+				font-weight: 600;
+				font-size: 16px;
+				transition: background-color var(--transition-fast), transform var(--transition-fast);
+			}
+			.redirect-box a.btn-redirect:hover {
+				background-color: var(--accent-hover);
+				transform: translateY(-2px);
+			}
+			.legacy-link-container {
+				margin-top: 15px;
+				font-size: 0.95rem;
+				color: var(--text-secondary);
+			}
+			.legacy-link-container a {
+				color: var(--accent);
+				text-decoration: none;
+				font-weight: 600;
+				transition: color var(--transition-fast);
+			}
+			.legacy-link-container a:hover {
+				text-decoration: underline;
+				color: var(--accent-hover);
+			}
+		</style>
 	</head>
 	<body>
 		<header>
@@ -63,322 +131,20 @@
 		</header>
 
 		<main>
-			<div class="content-wrapper ar-wrapper">
-				<h1>
-					Gerador de AR (Aviso de Recebimento)
-					<i
-						id="helpInfo"
-						class="fas fa-question-circle"
-						onclick="toggleInfoBox()"
-						title="Clique aqui para obter mais informações."
-					></i>
-				</h1>
-
-				<div class="info-box" id="infoBox">
-					<strong>Como funciona:</strong> Na aba <strong>Destinatário</strong>,
-					preencha as informações e clique em <strong>Incluir</strong> para
-					adicionar à lista. Na aba <strong>Remetente</strong>, confira os dados
-					de devolução, que já vêm preenchidos e podem ser editados. Ao
-					finalizar, clique em <strong>Imprimir</strong> para gerar o arquivo
-					PDF com a diagramação oficial dos Correios junto com as etiquetas para
-					os envelopes. Se quiser, ative a opção para imprimir também a etiqueta
-					do remetente.
-				</div>
-
-				<!-- Abas -->
-				<div class="tabs" role="tablist" aria-label="Dados do AR">
-					<button
-						type="button"
-						class="tab-btn"
-						role="tab"
-						id="tabDestinatario"
-						aria-selected="true"
-						aria-controls="panelDestinatario"
-					>
-						<i class="fas fa-user"></i> Destinatário
-					</button>
-					<button
-						type="button"
-						class="tab-btn"
-						role="tab"
-						id="tabRemetente"
-						aria-selected="false"
-						aria-controls="panelRemetente"
-						tabindex="-1"
-					>
-						<i class="fas fa-building"></i> Remetente
-					</button>
-				</div>
-
-				<!-- Aba: Destinatário -->
-				<section
-					id="panelDestinatario"
-					role="tabpanel"
-					aria-labelledby="tabDestinatario"
-				>
-					<form id="arForm" class="ar-form" autocomplete="off">
-						<div class="form-grid">
-							<div class="form-group col-4">
-								<label for="cep">CEP *</label>
-								<input
-									type="text"
-									id="cep"
-									placeholder="00000-000"
-									maxlength="9"
-									required
-									inputmode="numeric"
-								/>
-							</div>
-
-							<div class="form-group col-8">
-								<label for="nome">Nome / Empresa / Promoção *</label>
-								<input
-									type="text"
-									id="nome"
-									maxlength="65"
-									placeholder="Ex: João da Silva / Empresa X"
-									required
-								/>
-							</div>
-
-							<div class="form-group col-9">
-								<label for="endereco">Endereço *</label>
-								<input
-									type="text"
-									id="endereco"
-									maxlength="50"
-									placeholder="Ex: Rua João Pessoa"
-									required
-								/>
-							</div>
-
-							<div class="form-group col-3">
-								<label for="numero">Número *</label>
-								<input
-									type="text"
-									id="numero"
-									maxlength="8"
-									placeholder="Ex: 123"
-									inputmode="numeric"
-									required
-								/>
-							</div>
-
-							<div class="form-group col-6">
-								<label for="complemento">Complemento</label>
-								<input
-									type="text"
-									id="complemento"
-									maxlength="50"
-									placeholder="Ex: Apt 12, Bloco B"
-								/>
-							</div>
-
-							<div class="form-group col-6">
-								<label for="bairro">Bairro *</label>
-								<input
-									type="text"
-									id="bairro"
-									maxlength="50"
-									placeholder="Ex: Centro"
-									required
-								/>
-							</div>
-
-							<div class="form-group col-3">
-								<label for="uf">UF *</label>
-								<select id="uf" required>
-									<option value="">Carregando...</option>
-								</select>
-							</div>
-
-							<div class="form-group col-9">
-								<label for="cidade">Cidade *</label>
-								<select id="cidade" required disabled>
-									<option value="">Selecione a UF primeiro</option>
-								</select>
-							</div>
-
-							<div class="form-group col-12">
-								<label for="observacao">Observação</label>
-								<input
-									type="text"
-									id="observacao"
-									maxlength="60"
-									placeholder="Ex: Notificação de Débito Nº 45/2026"
-								/>
-							</div>
+			<div class="content-wrapper">
+				<div class="redirect-box">
+					<i class="fas fa-external-link-alt"></i>
+					<h1>Você será redirecionado em <span id="countdown">5</span> segundos...</h1>
+					<p>Estamos direcionando você para a nova versão da ferramenta em nosso site oficial.</p>
+					
+					<div style="width: 100%;">
+						<a id="redirect-link" href="#" class="btn-redirect">
+							<i class="fas fa-arrow-right"></i> Ir agora para a ferramenta
+						</a>
+						
+						<div class="legacy-link-container">
+							Procurando a versão antiga? <a href="https://jhonatancassante.github.io/utilities/pages/ar-generator-old.html">Acesse a versão antiga aqui</a>.
 						</div>
-					</form>
-				</section>
-
-				<!-- Aba: Remetente -->
-				<section
-					id="panelRemetente"
-					role="tabpanel"
-					aria-labelledby="tabRemetente"
-					hidden
-				>
-					<form id="remetenteForm" class="ar-form" autocomplete="off">
-						<p class="form-hint">
-							Estes dados aparecem no campo "Endereço para devolução do AR" e,
-							se a opção estiver ativada, na etiqueta do remetente.
-						</p>
-
-						<div class="form-grid">
-							<div class="form-group col-4">
-								<label for="remCep">CEP *</label>
-								<input
-									type="text"
-									id="remCep"
-									placeholder="00000-000"
-									maxlength="9"
-									required
-									inputmode="numeric"
-								/>
-							</div>
-
-							<div class="form-group col-8">
-								<label for="remNome">Nome / Órgão / Empresa *</label>
-								<input
-									type="text"
-									id="remNome"
-									maxlength="65"
-									placeholder="Ex: Município de Nova Odessa"
-									required
-								/>
-							</div>
-
-							<div class="form-group col-9">
-								<label for="remEndereco">Endereço *</label>
-								<input
-									type="text"
-									id="remEndereco"
-									maxlength="50"
-									placeholder="Ex: Avenida João Pessoa"
-									required
-								/>
-							</div>
-
-							<div class="form-group col-3">
-								<label for="remNumero">Número *</label>
-								<input
-									type="text"
-									id="remNumero"
-									maxlength="8"
-									placeholder="Ex: 777"
-									inputmode="numeric"
-									required
-								/>
-							</div>
-
-							<div class="form-group col-6">
-								<label for="remComplemento">Complemento</label>
-								<input
-									type="text"
-									id="remComplemento"
-									maxlength="50"
-									placeholder="Ex: Sala 2"
-								/>
-							</div>
-
-							<div class="form-group col-6">
-								<label for="remBairro">Bairro *</label>
-								<input
-									type="text"
-									id="remBairro"
-									maxlength="50"
-									placeholder="Ex: Centro"
-									required
-								/>
-							</div>
-
-							<div class="form-group col-3">
-								<label for="remUf">UF *</label>
-								<select id="remUf" required>
-									<option value="">Carregando...</option>
-								</select>
-							</div>
-
-							<div class="form-group col-9">
-								<label for="remCidade">Cidade *</label>
-								<select id="remCidade" required disabled>
-									<option value="">Selecione a UF primeiro</option>
-								</select>
-							</div>
-						</div>
-
-						<div class="form-actions">
-							<button
-								type="button"
-								id="btnRestaurarRemetente"
-								class="btn-outline"
-							>
-								<i class="fas fa-undo"></i> Restaurar padrão
-							</button>
-						</div>
-					</form>
-				</section>
-
-				<!-- Botão Incluir compartilhado: funciona nas duas abas -->
-				<div class="form-actions">
-					<button
-						type="submit"
-						id="btnIncluir"
-						class="btn-primary"
-						form="arForm"
-					>
-						<i class="fas fa-plus-circle"></i> Incluir
-					</button>
-				</div>
-
-				<!-- Seção da Tabela de Registros Cadastrados -->
-				<div id="tableSection" class="table-section" style="display: none">
-					<h3 class="table-title">
-						Registros Cadastrados (<span id="countRegistros">0</span>)
-					</h3>
-					<div class="table-responsive">
-						<table id="arTable" class="ar-table">
-							<thead>
-								<tr>
-									<th>Nome / Empresa</th>
-									<th>Endereço</th>
-									<th>Bairro</th>
-									<th>Cidade/UF</th>
-									<th>CEP</th>
-									<th>Obs.</th>
-									<th class="text-center">Ações</th>
-								</tr>
-							</thead>
-							<tbody id="tableBody"></tbody>
-						</table>
-					</div>
-
-					<!-- Opção: etiqueta com os dados do remetente (padrão: Não) -->
-					<div class="options-group">
-						<label class="switch-row" for="etiquetaRemetenteToggle">
-							<span class="switch-text"
-								>Imprimir etiqueta com os dados de remetente?</span
-							>
-							<span class="switch">
-								<input
-									type="checkbox"
-									id="etiquetaRemetenteToggle"
-									role="switch"
-								/>
-								<span class="slider"></span>
-							</span>
-							<span id="etiquetaRemetenteState" class="switch-state">Não</span>
-						</label>
-					</div>
-
-					<div class="btn-group action-buttons">
-						<button id="btnImprimir" class="btn-success">
-							<i class="fas fa-print"></i> Imprimir
-						</button>
-						<button id="btnLimpar" class="btn-danger">
-							<i class="fas fa-trash-alt"></i> Limpar Tudo
-						</button>
 					</div>
 				</div>
 			</div>
